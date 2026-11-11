@@ -1,0 +1,2213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barq Docs — Language Reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   Barq Docs — same design system as the marketing site
+   Primary #15803D (Forest Green) · Secondary #4F46E5 (Royal Blue)
+   Layout: fixed nav → two-col (sidebar + scrollable main)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* --- tokens --- */
+:root {
+  --bg:          #FAFAFA;
+  --bg-nav:      rgba(250,250,250,.97);
+  --bg-card:     #FFFFFF;
+  --bg-code:     #F3F4F6;
+  --bg-elevated: #F9FAFB;
+  --bg-sidebar:  #FFFFFF;
+  --border:      #E5E7EB;
+  --border-mid:  #D1D5DB;
+  --border-hi:   #9CA3AF;
+  --fg:          #111827;
+  --fg-muted:    #6B7280;
+  --fg-subtle:   #9CA3AF;
+  --green:       #15803D;
+  --green-hi:    #166534;
+  --blue:        #4F46E5;
+  --blue-hi:     #4338CA;
+  --grad:        linear-gradient(135deg,#15803D 0%,#4F46E5 100%);
+  --grad-soft:   linear-gradient(135deg,rgba(21,128,61,.07) 0%,rgba(79,70,229,.07) 100%);
+  --syn-kw:  #7C3AED;
+  --syn-fn:  #15803D;
+  --syn-ty:  #0369A1;
+  --syn-st:  #B45309;
+  --syn-cm:  #9CA3AF;
+  --syn-at:  #C026D3;
+  --syn-ns:  #0E7490;
+  --syn-nm:  #EA580C;
+  --syn-op:  #6B7280;
+  --syn-pu:  #374151;
+  --f-display: 'Sora', system-ui, sans-serif;
+  --f-body:    'Inter', system-ui, sans-serif;
+  --f-mono:    'JetBrains Mono','Fira Code',monospace;
+  --nav-h:     56px;
+  --sidebar-w: 240px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #0D1117;
+    --bg-nav:      rgba(13,17,23,.96);
+    --bg-card:     #161B22;
+    --bg-code:     #0D1117;
+    --bg-elevated: #21262D;
+    --bg-sidebar:  #161B22;
+    --border:      #30363D;
+    --border-mid:  #3D444D;
+    --border-hi:   #6E7681;
+    --fg:          #E6EDF3;
+    --fg-muted:    #8B949E;
+    --fg-subtle:   #6E7681;
+    --green:       #3FB950;
+    --green-hi:    #56D364;
+    --blue:        #818CF8;
+    --blue-hi:     #6E76F7;
+    --grad:        linear-gradient(135deg,#3FB950 0%,#818CF8 100%);
+    --grad-soft:   linear-gradient(135deg,rgba(63,185,80,.14) 0%,rgba(129,140,248,.14) 100%);
+    --syn-kw:  #FF7B72;
+    --syn-fn:  #79C0FF;
+    --syn-ty:  #FFA657;
+    --syn-st:  #A5D6FF;
+    --syn-cm:  #8B949E;
+    --syn-at:  #F778BA;
+    --syn-ns:  #D2A8FF;
+    --syn-nm:  #FFA657;
+    --syn-op:  #6E7681;
+    --syn-pu:  #C9D1D9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:          #0D1117;
+  --bg-nav:      rgba(13,17,23,.96);
+  --bg-card:     #161B22;
+  --bg-code:     #0D1117;
+  --bg-elevated: #21262D;
+  --bg-sidebar:  #161B22;
+  --border:      #30363D;
+  --border-mid:  #3D444D;
+  --border-hi:   #6E7681;
+  --fg:          #E6EDF3;
+  --fg-muted:    #8B949E;
+  --fg-subtle:   #6E7681;
+  --green:       #3FB950;
+  --green-hi:    #56D364;
+  --blue:        #818CF8;
+  --blue-hi:     #6E76F7;
+  --grad:        linear-gradient(135deg,#3FB950 0%,#818CF8 100%);
+  --grad-soft:   linear-gradient(135deg,rgba(63,185,80,.14) 0%,rgba(129,140,248,.14) 100%);
+  --syn-kw:  #FF7B72;
+  --syn-fn:  #79C0FF;
+  --syn-ty:  #FFA657;
+  --syn-st:  #A5D6FF;
+  --syn-cm:  #8B949E;
+  --syn-at:  #F778BA;
+  --syn-ns:  #D2A8FF;
+  --syn-nm:  #FFA657;
+  --syn-op:  #6E7681;
+  --syn-pu:  #C9D1D9;
+  color-scheme: dark;
+}
+
+/* reset */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--f-body);
+  background:var(--bg);
+  color:var(--fg);
+  font-size:15px;line-height:1.72;
+  overflow-x:hidden;
+}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%}
+
+/* ══ NAVBAR ══ */
+.nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;height:var(--nav-h);
+  background:var(--bg-nav);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 20px;gap:16px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--f-display);font-weight:800;font-size:1.1rem;
+  color:var(--fg);letter-spacing:-.01em;text-decoration:none;
+}
+.nav-logo:hover{text-decoration:none}
+.nav-logo-urdu{font-size:.75rem;color:var(--fg-subtle);font-family:var(--f-body);font-weight:400}
+.nav-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.nav-section{
+  font-family:var(--f-display);font-size:.88rem;font-weight:600;
+  color:var(--fg-muted);
+}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-back{
+  display:flex;align-items:center;gap:5px;
+  font-size:.82rem;color:var(--fg-muted);
+  padding:5px 11px;border-radius:7px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  transition:color .18s,border-color .18s;
+  text-decoration:none;
+}
+.nav-back:hover{color:var(--fg);border-color:var(--border-hi);text-decoration:none}
+.nav-version{
+  font-family:var(--f-mono);font-size:.7rem;
+  background:rgba(21,128,61,.1);border:1px solid rgba(21,128,61,.2);
+  padding:2px 8px;border-radius:20px;color:var(--green);
+}
+.nav-theme-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:7px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  color:var(--fg-muted);cursor:pointer;
+  transition:color .18s,border-color .18s;flex-shrink:0;
+}
+.nav-theme-toggle:hover{color:var(--fg);border-color:var(--border-hi)}
+
+/* ══ LAYOUT ══ */
+.layout{
+  display:grid;
+  grid-template-columns:var(--sidebar-w) 1fr;
+  margin-top:var(--nav-h);
+  min-height:calc(100vh - var(--nav-h));
+}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  position:sticky;
+  top:var(--nav-h);
+  height:calc(100vh - var(--nav-h));
+  overflow-y:auto;
+  background:var(--bg-sidebar);
+  border-right:1px solid var(--border);
+  padding:20px 0 40px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.sb-grp{margin-bottom:4px}
+.sb-label{
+  font-size:.66rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--fg-subtle);
+  padding:8px 18px 4px;display:block;
+}
+.sb-link{
+  display:block;padding:5px 18px 5px 20px;
+  font-size:.82rem;color:var(--fg-muted);
+  border-left:2px solid transparent;
+  transition:color .15s,background .15s,border-color .15s;
+  text-decoration:none;
+  line-height:1.4;
+}
+.sb-link:hover{color:var(--fg);background:var(--bg-elevated);text-decoration:none}
+.sb-link.active{
+  color:var(--green);background:rgba(21,128,61,.07);
+  border-left-color:var(--green);font-weight:500;
+}
+[data-theme="dark"] .sb-link.active{
+  background:rgba(63,185,80,.1);
+}
+.sb-divider{height:1px;background:var(--border);margin:10px 18px}
+
+/* ══ MAIN ══ */
+.main{
+  min-width:0;
+  padding:40px 48px 100px;
+  max-width:860px;
+}
+
+/* ══ TYPOGRAPHY ══ */
+.doc-title{
+  font-family:var(--f-display);
+  font-size:clamp(1.75rem,3vw,2.4rem);
+  font-weight:800;letter-spacing:-.025em;line-height:1.15;
+  margin-bottom:14px;
+}
+.doc-lead{
+  font-size:1.03rem;color:var(--fg-muted);
+  margin-bottom:32px;line-height:1.75;max-width:600px;
+}
+.doc-h2{
+  font-family:var(--f-display);
+  font-size:1.35rem;font-weight:700;letter-spacing:-.018em;
+  margin:52px 0 16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+  scroll-margin-top:calc(var(--nav-h) + 16px);
+}
+.doc-h3{
+  font-family:var(--f-display);
+  font-size:1rem;font-weight:700;
+  margin:28px 0 10px;
+  scroll-margin-top:calc(var(--nav-h) + 16px);
+}
+.doc-h4{
+  font-size:.74rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--fg-muted);margin:20px 0 8px;
+}
+p{margin-bottom:14px}
+ul,ol{padding-left:20px;margin-bottom:14px}
+li{margin-bottom:4px}
+hr.doc-rule{border:none;border-top:1px solid var(--border);margin:52px 0}
+
+/* inline code */
+code{
+  font-family:var(--f-mono);font-size:.82em;
+  background:var(--bg-code);border:1px solid var(--border);
+  padding:1px 6px;border-radius:4px;
+}
+
+/* code blocks */
+.code-wrap{margin:10px 0 20px}
+.code-lbl{
+  display:inline-block;font-family:var(--f-mono);font-size:.68rem;
+  font-weight:600;text-transform:none;letter-spacing:.01em;
+  color:var(--fg-subtle);background:var(--bg-elevated);
+  border:1px solid var(--border);border-bottom:none;
+  padding:4px 12px;border-radius:8px 8px 0 0;
+}
+.code-wrap pre{
+  margin:0;
+  background:var(--bg-code);border:1px solid var(--border);
+  border-radius:0 8px 8px 8px;
+  padding:18px 20px;
+  font-family:var(--f-mono);font-size:.79rem;line-height:1.75;
+  overflow-x:auto;
+}
+pre{
+  background:var(--bg-code);border:1px solid var(--border);
+  border-radius:8px;padding:18px 20px;
+  font-family:var(--f-mono);font-size:.79rem;line-height:1.75;
+  overflow-x:auto;margin:10px 0 20px;
+}
+pre code{background:none;border:none;padding:0;font-size:inherit}
+
+/* syntax tokens */
+.kw{color:var(--syn-kw)}
+.fn{color:var(--syn-fn)}
+.ty{color:var(--syn-ty)}
+.st{color:var(--syn-st)}
+.cm{color:var(--syn-cm);font-style:italic}
+.at{color:var(--syn-at)}
+.ns{color:var(--syn-ns)}
+.nm{color:var(--syn-nm)}
+.op{color:var(--syn-op)}
+.pu{color:var(--syn-pu)}
+
+/* callouts */
+.callout{
+  border-radius:8px;padding:14px 16px;
+  margin:18px 0;display:flex;gap:12px;align-items:flex-start;
+}
+.callout .c-icon{font-size:14px;flex-shrink:0;margin-top:2px}
+.callout .c-body strong{display:block;font-size:.85rem;font-weight:700;margin-bottom:3px}
+.callout .c-body p{font-size:.82rem;color:var(--fg-muted);margin:0}
+.callout.ok{
+  background:rgba(21,128,61,.07);
+  border-left:3px solid var(--green);
+}
+.callout.ok .c-icon,.callout.ok strong{color:var(--green)}
+.callout.warn{
+  background:rgba(217,119,6,.07);
+  border-left:3px solid #D97706;
+}
+.callout.warn .c-icon,.callout.warn strong{color:#D97706}
+.callout.info{
+  background:rgba(79,70,229,.07);
+  border-left:3px solid var(--blue);
+}
+.callout.info .c-icon,.callout.info strong{color:var(--blue)}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:10px 0 20px}
+table{border-collapse:collapse;width:100%;font-size:.84rem;min-width:320px}
+th{
+  background:var(--bg-elevated);text-align:left;
+  padding:8px 14px;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+  color:var(--fg-subtle);border-bottom:1px solid var(--border);
+}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg-elevated)}
+
+/* feature cards grid */
+.feat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:10px;margin:20px 0;
+}
+.feat-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;padding:14px;
+}
+.feat-card .ic{font-size:1.2rem;margin-bottom:6px}
+.feat-card strong{display:block;font-size:.82rem;font-weight:700;margin-bottom:3px}
+.feat-card span{font-size:.78rem;color:var(--fg-muted)}
+
+/* db cards */
+.db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:14px 0}
+.db-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:8px;padding:11px 14px;
+}
+.db-card.core{border-left:3px solid var(--green)}
+.db-card.plan{border-left:3px solid #D97706;opacity:.7}
+.db-name{font-weight:700;font-size:.85rem}
+.db-type{font-size:.7rem;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* roadmap grid */
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:16px 0}
+.rm-phase{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px}
+.ph-lbl{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.ph-p1{color:var(--green)}.ph-p2{color:var(--blue)}.ph-p3{color:#D97706}.ph-p4{color:var(--fg-muted)}
+.rm-phase strong{display:block;font-size:.85rem;font-weight:700;margin-bottom:7px}
+.rm-phase ul{font-size:.78rem;color:var(--fg-muted);margin:0;padding-left:15px}
+
+/* decision list */
+.dec-list{list-style:none;padding:0;margin:0}
+.dec-item{
+  display:flex;gap:10px;padding:11px 14px;
+  border-bottom:1px solid var(--border);align-items:flex-start;
+}
+.dec-item:last-child{border-bottom:none}
+.d-num{
+  font-size:.68rem;font-weight:700;font-family:var(--f-mono);
+  color:#D97706;background:rgba(217,119,6,.1);
+  padding:2px 7px;border-radius:20px;flex-shrink:0;margin-top:2px;white-space:nowrap;
+}
+.d-title{font-weight:600;font-size:.85rem;margin-bottom:2px}
+.d-opts{font-size:.78rem;color:var(--fg-muted)}
+.d-status{
+  font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:3px;margin-left:auto;white-space:nowrap;
+}
+.d-status.pending{background:rgba(217,119,6,.1);color:#D97706}
+.d-status.done{background:rgba(21,128,61,.1);color:var(--green)}
+
+/* priority box */
+.priority-box{
+  background:var(--bg-card);border:1px solid var(--border-mid);
+  border-radius:10px;padding:18px 22px;margin:16px 0;
+}
+.priority-box ol{margin:10px 0 0;padding-left:20px}
+.priority-box li{font-size:.85rem;margin-bottom:7px}
+
+/* version badge pill */
+.v-badge{
+  display:inline-block;font-family:var(--f-mono);font-size:.72rem;
+  padding:2px 8px;border-radius:20px;margin-right:4px;
+}
+.v-spec{background:rgba(79,70,229,.1);color:var(--blue)}
+.v-stable{background:rgba(21,128,61,.1);color:var(--green)}
+
+/* mobile overlay */
+.mob-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150;
+}
+.mob-overlay.open{display:block}
+.mob-menu-btn{
+  display:none;flex-direction:column;gap:5px;cursor:pointer;
+  background:none;border:1px solid var(--border);border-radius:7px;
+  padding:7px 10px;
+}
+.mob-menu-btn span{display:block;width:16px;height:1.5px;background:var(--fg-muted);border-radius:2px}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;left:0;top:var(--nav-h);
+    height:calc(100vh - var(--nav-h));
+    width:260px;
+    transform:translateX(-100%);transition:.25s ease;z-index:160;
+    box-shadow:4px 0 20px rgba(0,0,0,.12);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .mob-menu-btn{display:flex}
+  .main{padding:28px 20px 80px}
+  .nav-version{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG gradient def (global) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2BAD2B"/>
+      <stop offset="100%" stop-color="#3434e6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+      <path d="M15 2L4 15h9l-2 9 13-13h-9l2-9z" fill="url(#lg1)"/>
+    </svg>
+    Barq
+    <span class="nav-logo-urdu">برق</span>
+  </a>
+  <div class="nav-sep"></div>
+  <span class="nav-section">Documentation</span>
+
+  <div class="nav-right">
+    <span class="nav-version">Draft 0.1</span>
+    <a href="../index.html" class="nav-back">
+      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6" stroke-width="2"/></svg>
+      Home
+    </a>
+    <button class="nav-theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="icon-sun" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke-width="2"/><line x1="12" y1="1" x2="12" y2="3" stroke-width="2"/><line x1="12" y1="21" x2="12" y2="23" stroke-width="2"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-width="2"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-width="2"/><line x1="1" y1="12" x2="3" y2="12" stroke-width="2"/><line x1="21" y1="12" x2="23" y2="12" stroke-width="2"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-width="2"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-width="2"/></svg>
+      <svg class="icon-moon" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"/></svg>
+    </button>
+    <button class="mob-menu-btn" id="mob-menu-btn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mob-overlay" id="mob-overlay"></div>
+
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sb-grp">
+    <span class="sb-label">Overview</span>
+    <a class="sb-link active" href="#intro">Introduction</a>
+    <a class="sb-link" href="#install">Install &amp; Repositories</a>
+    <a class="sb-link" href="#goals">Design Goals</a>
+    <a class="sb-link" href="#security">Security</a>
+    <a class="sb-link" href="#performance">Performance</a>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-grp">
+    <span class="sb-label">Language</span>
+    <a class="sb-link" href="#syntax">Syntax Rules</a>
+    <a class="sb-link" href="#variables">Variables &amp; Types</a>
+    <a class="sb-link" href="#functions">Functions</a>
+    <a class="sb-link" href="#control-flow">Control Flow</a>
+    <a class="sb-link" href="#oop">Classes &amp; OOP</a>
+    <a class="sb-link" href="#interfaces">Interfaces &amp; Traits</a>
+    <a class="sb-link" href="#enums">Enums</a>
+    <a class="sb-link" href="#namespaces">Namespaces</a>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-grp">
+    <span class="sb-label">Runtime</span>
+    <a class="sb-link" href="#stdlib">Standard Library</a>
+    <a class="sb-link" href="#database">Database Layer</a>
+    <a class="sb-link" href="#frontend">Frontend &amp; Templates</a>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-grp">
+    <span class="sb-label">Framework</span>
+    <a class="sb-link" href="#framework">MVC Structure</a>
+    <a class="sb-link" href="#routing">Routing</a>
+    <a class="sb-link" href="#models">Models &amp; ORM</a>
+    <a class="sb-link" href="#migrations">Migrations</a>
+    <a class="sb-link" href="#providers">Providers &amp; Events</a>
+    <a class="sb-link" href="#auth">Auth, Storage &amp; Scheduler</a>
+    <a class="sb-link" href="#api">REST API</a>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-grp">
+    <span class="sb-label">Project</span>
+    <a class="sb-link" href="#versioning">Versioning</a>
+    <a class="sb-link" href="#roadmap">Roadmap</a>
+    <a class="sb-link" href="#decisions">Open Decisions</a>
+  </div>
+
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+<!-- ════════════════════════
+     INTRODUCTION
+════════════════════════════ -->
+<section id="intro">
+  <h1 class="doc-title">Barq Language</h1>
+  <p class="doc-lead">
+    A modern, full-stack language combining Python's clean syntax with PHP's web power.
+    Fast by design. No external packages needed.
+  </p>
+
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="ic">🖥️</div>
+      <strong>Full-Stack</strong>
+      <span>Backend + frontend in one language and one file.</span>
+    </div>
+    <div class="feat-card">
+      <div class="ic">🐍</div>
+      <strong>Python Syntax</strong>
+      <span>Indentation blocks, clean keywords, readable.</span>
+    </div>
+    <div class="feat-card">
+      <div class="ic">⚡</div>
+      <strong>Fast</strong>
+      <span>Bytecode VM, connection pooling, zero startup overhead.</span>
+    </div>
+    <div class="feat-card">
+      <div class="ic">📦</div>
+      <strong>Self-Contained</strong>
+      <span>Own stdlib and package registry — no npm/pip/composer.</span>
+    </div>
+    <div class="feat-card">
+      <div class="ic">🗄️</div>
+      <strong>Multi-Database</strong>
+      <span>MySQL, Postgres, SQLite, MongoDB built in.</span>
+    </div>
+    <div class="feat-card">
+      <div class="ic">💻</div>
+      <strong>Cross-Platform</strong>
+      <span>Linux · macOS · Windows — same code, all platforms.</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><strong>Barq</strong> (برق) — Urdu for <em>Lightning</em></td></tr>
+        <tr><td>File extension</td><td><code>.bq</code></td></tr>
+        <tr><td>Paradigm</td><td>Multi-paradigm: OOP + procedural + limited functional</td></tr>
+        <tr><td>Typing</td><td>Strict — types mandatory, enforced at compile time</td></tr>
+        <tr><td>Execution</td><td>Bytecode VM (compiled, cached as <code>.bqc</code>)</td></tr>
+        <tr><td>Platform</td><td>Linux · macOS (Intel + Apple Silicon) · Windows 10/11</td></tr>
+        <tr><td>Built-in</td><td>HTTP server, DB connectors, template engine, package manager</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     INSTALL & REPOSITORIES
+════════════════════════════ -->
+<section id="install">
+  <h2 class="doc-h2">Install &amp; Repositories</h2>
+  <p>Barq is split into one repository for the language and one for each package. The language runs on its own; the framework and the packages plug into it when they are installed. Everything is pure Python 3 with no dependencies.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Repository</th><th>What it holds</th><th>Needs</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/barq-lang/barq"><code>barq</code></a></td><td>The language: compiler, VM, REPL, standard library (Database, Http, Route, Session, templates, Storage, uploads, Mail, Queue, Test…), <code>barq fmt</code>, <code>barq check</code>, <code>barq serve</code></td><td>Python 3</td></tr>
+        <tr><td><a href="https://github.com/barq-lang/barq-framework"><code>barq-framework</code></a></td><td>Models (ORM), migrations, seeders, factories, the service container, providers, events, the scheduler, <code>make:*</code></td><td>barq</td></tr>
+        <tr><td><a href="https://github.com/barq-lang/barq-auth"><code>barq-auth</code></a></td><td>Guards, Gate and policies, API tokens, password resets, email verification, 2FA, OAuth login, teams, devices, <code>auth:install</code></td><td>barq-framework</td></tr>
+        <tr><td><a href="https://github.com/barq-lang/barq-permissions"><code>barq-permissions</code></a></td><td>Roles, permissions, wildcards, team roles, <code>role:</code> / <code>permission:</code> middleware</td><td>barq-auth</td></tr>
+        <tr><td><a href="https://github.com/barq-lang/vscode-barq"><code>vscode-barq</code></a></td><td>VS Code extension: highlighting, format on save, inline errors, outline, snippets</td><td>barq</td></tr>
+        <tr><td><a href="https://github.com/barq-lang/barq-website"><code>barq-website</code></a></td><td>This site, the docs and the admin dashboard</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">terminal</span>
+    <pre><code><span class="cm"># the language</span>
+git clone https://github.com/barq-lang/barq
+barq/bin/barq run barq/examples/hello.bq
+
+<span class="cm"># the framework and packages: clone them next to barq/</span>
+git clone https://github.com/barq-lang/barq-framework
+git clone https://github.com/barq-lang/barq-auth
+git clone https://github.com/barq-lang/barq-permissions
+barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq-permissions</span></code></pre>
+  </div>
+
+  <p>The <code>barq</code> command finds packages that sit next to the <code>barq</code> checkout, in the folders listed in <code>BARQ_PATH</code>, or anywhere Python can import them. <code>BARQ_PACKAGES=none</code> turns them all off; <code>BARQ_PACKAGES=barq_framework</code> loads only that one (and what it needs).</p>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>New in v0.18.0-alpha: tooling</strong>
+      <p><code>barq fmt</code> formats <code>.bq</code> files (<code>--check</code> for CI, <code>--diff</code>, <code>-</code> for stdin). <code>barq check</code> reports syntax and type errors without running anything (<code>--json</code> for editors). The <a href="https://github.com/barq-lang/vscode-barq">VS Code extension</a> uses both.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     DESIGN GOALS
+════════════════════════════ -->
+<section id="goals">
+  <h2 class="doc-h2">Design Goals</h2>
+  <ol>
+    <li><strong>Readability over cleverness.</strong> Code reads like structured English. Python's indentation rules apply everywhere.</li>
+    <li><strong>Full-stack from day one.</strong> No separate templating language. The runtime handles server responses and browser output.</li>
+    <li><strong>Database as first-class citizen.</strong> Official drivers for every major database, uniform query API across engines.</li>
+    <li><strong>Strict typing.</strong> Type declarations are mandatory. The compiler catches type errors, undefined variables, and logic errors before any code runs.</li>
+    <li><strong>No external dependencies.</strong> Every feature lives in Barq's own standard library.</li>
+    <li><strong>Familiar to PHP and Python developers.</strong> OOP structure mirrors PHP; control flow mirrors Python.</li>
+    <li><strong>Cross-platform from day one.</strong> The same <code>.bq</code> source runs on Linux, macOS, and Windows without modification.</li>
+    <li><strong>Eats its own cooking.</strong> The official website, documentation, and package registry are all built in Barq.</li>
+  </ol>
+</section>
+
+<!-- ════════════════════════
+     SECURITY
+════════════════════════════ -->
+<section id="security">
+  <h2 class="doc-h2">Security</h2>
+  <p>Barq is <strong>secure by design</strong>. Security is not a plugin or an afterthought — it is enforced by the compiler and runtime.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>How it works</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Strict typing</strong></td><td>All variables must have explicit type declarations. The compiler rejects mismatches before execution.</td></tr>
+        <tr><td><strong>Pre-execution checking</strong></td><td>Compiler checks types, undefined variables, unreachable code, and logic errors before any code runs.</td></tr>
+        <tr><td><strong>No implicit coercion</strong></td><td><code>int + string</code> is a compile error. Explicit casting required: <code>string(x)</code>.</td></tr>
+        <tr><td><strong>SQL injection prevention</strong></td><td>Query builder uses parameterized queries by default. Raw SQL requires explicit <code>db.raw()</code> with bound parameters.</td></tr>
+        <tr><td><strong>XSS protection</strong></td><td>All template output is HTML-escaped by default. Unescaped output requires explicit opt-in.</td></tr>
+        <tr><td><strong>CSRF protection</strong></td><td>Framework validates CSRF tokens on all POST / PUT / DELETE routes automatically.</td></tr>
+        <tr><td><strong>Input validation</strong></td><td><code>Barq\Validation</code> sanitizes and validates all user input.</td></tr>
+        <tr><td><strong>Secure crypto</strong></td><td><code>Barq\Crypto</code> and <code>Barq\Hash</code> use proven algorithms (bcrypt, AES-256, SHA-256).</td></tr>
+        <tr><td><strong>No eval</strong></td><td>There is no <code>eval()</code> function. Dynamic code execution is not possible by design.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="doc-h3">Strict Typing in Practice</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">strict-types.bq</span>
+    <pre><code><span class="cm">// ✅ CORRECT — types declared</span>
+<span class="ty">string</span>  name   = <span class="st">"Alice"</span>
+<span class="ty">int</span>     age    = <span class="nm">25</span>
+<span class="ty">float</span>   score  = <span class="nm">98.5</span>
+
+<span class="cm">// ❌ COMPILE ERROR — missing type</span>
+<span class="cm">// name = "Alice"       → Error: variable 'name' has no type declaration</span>
+
+<span class="cm">// ❌ COMPILE ERROR — wrong type</span>
+<span class="cm">// string age = 25      → Error: cannot assign int to string</span>
+
+<span class="cm">// ✅ CORRECT — explicit cast</span>
+<span class="ty">float</span>  c = <span class="fn">float</span>(age) + score</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     PERFORMANCE
+════════════════════════════ -->
+<section id="performance">
+  <h2 class="doc-h2">Performance</h2>
+  <p>Barq is designed to be significantly faster than PHP and Python for web workloads.</p>
+
+  <ul>
+    <li><strong>Bytecode compilation</strong> — <code>.bq</code> source compiled to bytecode on first run, cached as <code>.bqc</code></li>
+    <li><strong>No startup interpreter overhead</strong> — VM loads cached bytecode directly</li>
+    <li><strong>Built-in HTTP server</strong> — no Apache/Nginx layer needed for development</li>
+    <li><strong>Zero external packages at runtime</strong> — no dependency resolution at startup</li>
+    <li><strong>Connection pooling built in</strong> — database connections pooled automatically</li>
+    <li><strong>Ahead-of-time type checking</strong> — when types are declared, the VM uses optimized paths</li>
+  </ul>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Benchmark</th><th>PHP 8.3</th><th>Python 3.12</th><th>Barq Target</th></tr></thead>
+      <tbody>
+        <tr><td>Simple HTTP response</td><td>~1 ms</td><td>~2 ms</td><td>&lt; 0.5 ms</td></tr>
+        <tr><td>DB query + render</td><td>~5 ms</td><td>~8 ms</td><td>&lt; 2 ms</td></tr>
+        <tr><td>JSON API response</td><td>~2 ms</td><td>~3 ms</td><td>&lt; 1 ms</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.78rem;color:var(--fg-subtle)">These are design targets, not measured benchmarks.</p>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     SYNTAX RULES
+════════════════════════════ -->
+<section id="syntax">
+  <h2 class="doc-h2">Syntax Rules</h2>
+  <ul>
+    <li>Indentation-based blocks — no curly braces</li>
+    <li>No semicolons at end of lines</li>
+    <li>4 spaces or 1 tab per level (consistent within a file)</li>
+    <li><code>//</code> for single-line comments, <code>/* */</code> for multi-line</li>
+  </ul>
+
+  <div class="code-wrap">
+    <span class="code-lbl">syntax.bq</span>
+    <pre><code><span class="cm">// Single-line comment</span>
+
+<span class="cm">/*
+   Multi-line comment
+*/</span>
+
+<span class="kw">namespace</span> <span class="ns">App</span>
+
+<span class="kw">class</span> <span class="ty">Example</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">hello</span>()
+        <span class="kw">return</span> <span class="st">"Hello, World!"</span></code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     VARIABLES & TYPES
+════════════════════════════ -->
+<section id="variables">
+  <h2 class="doc-h2">Variables &amp; Types</h2>
+
+  <h3 class="doc-h3">Built-in Types</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th>Description</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>int</code></td><td>Integer (64-bit)</td><td><code>int age = 25</code></td></tr>
+        <tr><td><code>float</code></td><td>Decimal (64-bit)</td><td><code>float price = 9.99</code></td></tr>
+        <tr><td><code>string</code></td><td>Text (UTF-8)</td><td><code>string name = "Alice"</code></td></tr>
+        <tr><td><code>bool</code></td><td>Boolean</td><td><code>bool active = true</code></td></tr>
+        <tr><td><code>const</code></td><td>Immutable constant</td><td><code>const MAX = 100</code></td></tr>
+        <tr><td><code>null</code></td><td>Null / no value</td><td><code>user = null</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="doc-h3">Declaration — Types are Mandatory</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">variables.bq</span>
+    <pre><code><span class="cm">// Types are REQUIRED — compiler enforces this</span>
+<span class="ty">string</span>  name   = <span class="st">"Alice"</span>
+<span class="ty">int</span>     age    = <span class="nm">25</span>
+<span class="ty">float</span>   score  = <span class="nm">98.5</span>
+<span class="ty">bool</span>    active = <span class="kw">true</span>
+
+<span class="cm">// Constants — type inferred from value, cannot reassign</span>
+<span class="kw">const</span> MAX_RETRIES = <span class="nm">3</span>
+<span class="kw">const</span> APP_NAME    = <span class="st">"Barq"</span>
+
+<span class="cm">// COMPILE ERROR examples (caught before execution):</span>
+<span class="cm">// name = "Alice"       → Error: missing type declaration</span>
+<span class="cm">// string age = 25      → Error: cannot assign int to string</span>
+<span class="cm">// float c = age + 1.5  → Error: int + float requires explicit cast</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3">Visibility Modifiers</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Modifier</th><th>Inside class</th><th>Module level</th></tr></thead>
+      <tbody>
+        <tr><td><code>public</code></td><td>Accessible from anywhere</td><td>Exported symbol</td></tr>
+        <tr><td><code>private</code></td><td>Same class only</td><td>Not exported</td></tr>
+        <tr><td><code>protected</code></td><td>Class + subclasses</td><td>Submodule access</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — String interpolation: <code>"{name}"</code> curly brace</strong>
+      <p>All string literals support <code>{variable}</code> interpolation. Single quotes <code>'...'</code> are literal — no interpolation.</p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">interpolation.bq</span>
+    <pre><code><span class="ty">string</span> name = <span class="st">"Alice"</span>
+<span class="ty">int</span>    age  = <span class="nm">25</span>
+
+<span class="ty">string</span> greeting = <span class="st">"Hello, {name}!"</span>
+<span class="ty">string</span> info     = <span class="st">"Name: {name}, Age: {age}"</span>
+<span class="ty">string</span> expr     = <span class="st">"Total: {price * qty}"</span>
+<span class="ty">string</span> method   = <span class="st">"Upper: {name.upper()}"</span>
+
+<span class="cm">// Single quotes — NOT interpolated (literal)</span>
+<span class="ty">string</span> raw = <span class="st">'{name} is a placeholder'</span></code></pre>
+  </div>
+
+
+  <h3 class="doc-h3" id="multiline">Multi-line Strings &amp; Long Lines</h3>
+  <p><code>"""…"""</code> strings span lines and interpolate; <code>'''…'''</code> strings are literal. The indentation all lines share is removed, along with the line break after the opening quotes and a last line holding only the closing quotes. A line ending in an operator (<code>+</code>, <code>and</code>, <code>??</code>, <code>=</code>…) carries on to the next line.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">strings.bq</span>
+    <pre><code><span class="ty">string</span> card = <span class="st">"""</span>
+<span class="st">    &lt;div class="card"&gt;</span>
+<span class="st">        &lt;h2&gt;{title}&lt;/h2&gt;</span>
+<span class="st">    &lt;/div&gt;</span>
+<span class="st">    """</span>
+
+<span class="ty">int</span> total = price +
+    shipping +
+    tax</code></pre>
+  </div>
+
+  <h3 class="doc-h3" id="nullable">Nullable Types</h3>
+  <div class="callout info">
+    <span class="c-icon">🟡</span>
+    <div class="c-body">
+      <strong>Implemented in v0.13 — provisional</strong>
+      <p><code>int</code>, <code>float</code> and <code>bool</code> never hold <code>null</code>. Put <code>?</code> in front of a type when null is allowed. <code>string</code>, collections and classes already accept null, so <code>?User</code> mainly tells the reader to expect it.</p>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">nullable.bq</span>
+    <pre><code><span class="ty">?int</span> age = <span class="kw">null</span>
+<span class="ty">?int</span> count                       <span class="cm">// no value: null (int count starts at 0)</span>
+<span class="ty">list&lt;?int&gt;</span> scores = #[<span class="nm">90</span>, <span class="kw">null</span>, <span class="nm">75</span>]
+
+<span class="at">#[?User]</span>
+<span class="kw">karo</span> <span class="fn">find</span>(<span class="ty">int</span> id)
+    <span class="kw">return</span> id == <span class="nm">1</span> ? <span class="kw">new</span> <span class="ty">User</span>(<span class="st">"Ali"</span>) : <span class="kw">null</span>
+
+print(find(<span class="nm">2</span>)?.name ?? <span class="st">"nobody"</span>)
+<span class="ty">int</span> years = age ?? <span class="nm">0</span>
+<span class="ty">int</span> x = <span class="kw">null</span>   <span class="cm">// error: variable 'x' is int and cannot be null — make it ?int to allow null</span></code></pre>
+  </div>
+  <h3 class="doc-h3">Collections ✅ — Option C (<code>#</code> prefix)</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">collections.bq</span>
+    <pre><code><span class="cm">// List — #[...]  ordered, allows duplicates</span>
+list&lt;string&gt; names  = #[<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Carol"</span>]
+list&lt;int&gt;    ids    = #[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]
+
+<span class="cm">// Dict — #{ ... }  key-value pairs</span>
+dict&lt;string, int&gt;    scores = #{<span class="st">"Alice"</span>: <span class="nm">95</span>, <span class="st">"Bob"</span>: <span class="nm">87</span>}
+dict&lt;string, string&gt; config = #{<span class="st">"host"</span>: <span class="st">"localhost"</span>, <span class="st">"port"</span>: <span class="st">"3306"</span>}
+
+<span class="cm">// Set — #(...)  unique values only</span>
+set&lt;string&gt; tags   = #(<span class="st">"php"</span>, <span class="st">"python"</span>, <span class="st">"barq"</span>)
+set&lt;int&gt;    primes = #(<span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">7</span>, <span class="nm">11</span>)
+
+<span class="cm">// Accessing</span>
+string first = names[<span class="nm">0</span>]           <span class="cm">// "Alice"</span>
+int    score = scores[<span class="st">"Alice"</span>]    <span class="cm">// 95</span>
+bool   has   = tags.has(<span class="st">"php"</span>)    <span class="cm">// true</span>
+
+<span class="cm">// Nested</span>
+dict&lt;string, list&lt;int&gt;&gt; grouped = #{<span class="st">"evens"</span>: #[<span class="nm">2</span>,<span class="nm">4</span>,<span class="nm">6</span>], <span class="st">"odds"</span>: #[<span class="nm">1</span>,<span class="nm">3</span>,<span class="nm">5</span>]}</code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     FUNCTIONS
+════════════════════════════ -->
+<section id="functions">
+  <h2 class="doc-h2">Functions</h2>
+  <p>Functions use the <code>karo</code> keyword (Urdu کرو — “do it”). There are three forms:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Form</th><th>Syntax</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Named function</td><td><code>karo name(params)</code></td><td><code>karo sum(int a, int b)</code></td></tr>
+        <tr><td>Anonymous function</td><td><code>karo(params): type</code> + indented body</td><td><code>any greet = karo(string name): string</code></td></tr>
+        <tr><td>Lambda</td><td><code>kr(params): type =&gt; expr</code></td><td><code>function double = kr(int n): int =&gt; n * 2</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>For named functions, visibility and return type are declared as <code>#[...]</code> attributes on the lines above.</p>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — Function syntax</strong>
+      <p><code>#[Public]</code> / <code>#[Private]</code> / <code>#[Protected]</code> · <code>#[int]</code> / <code>#[string]</code> / <code>#[void]</code> · <code>karo name(params)</code></p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">functions.bq</span>
+    <pre><code><span class="cm">// Single-line body</span>
+<span class="at">#[Public]</span>
+<span class="at">#[int]</span>
+<span class="kw">karo</span> <span class="fn">sum</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">return</span> a + b
+
+<span class="cm">// Multi-line body</span>
+<span class="at">#[Public]</span>
+<span class="at">#[string]</span>
+<span class="kw">karo</span> <span class="fn">greet</span>(<span class="ty">string</span> name)
+    <span class="kw">return</span> <span class="st">"Hello, "</span> + name
+
+<span class="cm">// Private</span>
+<span class="at">#[Private]</span>
+<span class="at">#[string]</span>
+<span class="kw">karo</span> <span class="fn">hashPassword</span>(<span class="ty">string</span> raw)
+    <span class="kw">return</span> <span class="ty">Hash</span>.bcrypt(raw)
+
+<span class="cm">// Void — no return value</span>
+<span class="at">#[Public]</span>
+<span class="at">#[void]</span>
+<span class="kw">karo</span> <span class="fn">log</span>(<span class="ty">string</span> message)
+    <span class="ty">Log</span>.info(message)</code></pre>
+  </div>
+
+  <h3 class="doc-h3">Return Type Attributes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Attribute</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>#[int]</code></td><td>Returns integer</td></tr>
+        <tr><td><code>#[float]</code></td><td>Returns float</td></tr>
+        <tr><td><code>#[string]</code></td><td>Returns string</td></tr>
+        <tr><td><code>#[bool]</code></td><td>Returns boolean</td></tr>
+        <tr><td><code>#[void]</code></td><td>No return value</td></tr>
+        <tr><td><code>#[User]</code></td><td>Returns a class instance</td></tr>
+        <tr><td><code>#[list&lt;int&gt;]</code></td><td>Returns a typed collection</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="doc-h3">Anonymous Functions &amp; Lambdas</h3>
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — two ways to write a function without a name</strong>
+      <p>Anonymous function <code>karo(params): type</code> with an indented body · Lambda <code>kr(params): type =&gt; expr</code> for a single expression</p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">closures.bq</span>
+    <pre><code><span class="cm">// Anonymous function — karo(...) with a body on the next lines</span>
+<span class="ty">any</span> process = <span class="kw">karo</span>(<span class="ty">string</span> name): <span class="ty">string</span>
+    <span class="ty">string</span> upper = <span class="ty">Str</span>.upper(name)
+    <span class="kw">return</span> <span class="st">"Hello, {upper}"</span>
+
+<span class="cm">// Anonymous function passed as argument</span>
+<span class="ty">list&lt;int&gt;</span> result = items.map(<span class="kw">karo</span>(<span class="ty">int</span> x): <span class="ty">int</span>
+    <span class="ty">int</span> doubled = x * <span class="nm">2</span>
+    <span class="kw">return</span> doubled
+)
+
+<span class="cm">// Lambda — kr(...) for a single expression; function values have the type function</span>
+<span class="ty">function</span> double = <span class="kw">kr</span>(<span class="ty">int</span> n): <span class="ty">int</span> =&gt; n * <span class="nm">2</span>
+<span class="ty">list&lt;int&gt;</span> doubled = items.map(<span class="kw">kr</span>(<span class="ty">int</span> x): <span class="ty">int</span> =&gt; x * <span class="nm">2</span>)</code></pre>
+  </div>
+
+  <p>The <code>function</code> type (v0.13) holds any callable value — a named function, a lambda, a bound method like <code>counter.bump</code>, or a built-in — so parameters can say they expect one: <code>karo applyTwice(function fn, int value)</code>.</p>
+
+  <h3 class="doc-h3" id="arguments">Defaults, Named Arguments &amp; Variadics</h3>
+  <div class="callout info">
+    <span class="c-icon">🟡</span>
+    <div class="c-body">
+      <strong>Implemented in v0.12 — provisional</strong>
+      <p>Default values are constants · named arguments go after positional ones · <code>*int numbers</code> collects the rest into a <code>list&lt;int&gt;</code> · <code>f(*list)</code> spreads a list</p>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">arguments.bq</span>
+    <pre><code><span class="at">#[string]</span>
+<span class="kw">karo</span> <span class="fn">greet</span>(<span class="ty">string</span> name = <span class="st">"World"</span>, <span class="ty">string</span> greeting = <span class="st">"Hello"</span>)
+    <span class="kw">return</span> <span class="st">"{greeting}, {name}!"</span>
+
+greet()                            <span class="cm">// Hello, World!</span>
+greet(<span class="st">"Ali"</span>, greeting: <span class="st">"Salaam"</span>)   <span class="cm">// Salaam, Ali!</span>
+<span class="kw">new</span> <span class="ty">User</span>(name: <span class="st">"Ali"</span>, age: <span class="nm">30</span>)      <span class="cm">// constructors take named arguments too</span>
+
+<span class="at">#[int]</span>
+<span class="kw">karo</span> <span class="fn">sum</span>(*<span class="ty">int</span> numbers)            <span class="cm">// numbers is a list&lt;int&gt;</span>
+    <span class="kw">return</span> numbers.reduce(<span class="kw">kr</span>(<span class="ty">int</span> a, <span class="ty">int</span> b): <span class="ty">int</span> =&gt; a + b, <span class="nm">0</span>)
+
+sum(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)                       <span class="cm">// 6</span>
+<span class="ty">list&lt;int&gt;</span> more = #[<span class="nm">4</span>, <span class="nm">5</span>]
+sum(*more, <span class="nm">6</span>)                       <span class="cm">// 15 — *list spreads into the arguments</span></code></pre>
+  </div>
+  <p>Defaults are worked out on every call, so <code>list&lt;int&gt; seen = #[]</code> is a fresh list each time. Built-in functions take positional arguments only. Route handlers can rely on defaults too: <code>karo index(Request req, int page = 1)</code> serves <code>/posts</code> and <code>/posts/:page</code>.</p>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     CONTROL FLOW
+════════════════════════════ -->
+<section id="control-flow">
+  <h2 class="doc-h2">Control Flow</h2>
+
+  <h3 class="doc-h3">If / Else</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">conditionals.bq</span>
+    <pre><code><span class="cm">// Block form</span>
+<span class="kw">if</span> (score >= <span class="nm">90</span>)
+    grade = <span class="st">"A"</span>
+<span class="kw">else if</span> (score >= <span class="nm">80</span>)
+    grade = <span class="st">"B"</span>
+<span class="kw">else</span>
+    grade = <span class="st">"F"</span>
+
+<span class="cm">// Single-line form</span>
+<span class="kw">if</span> (a) <span class="kw">return</span> <span class="st">'good'</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3">For Loop</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">for.bq</span>
+    <pre><code><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">10</span>)
+    <span class="fn">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">100</span>, <span class="nm">2</span>)   <span class="cm">// start, stop, step</span>
+    <span class="fn">print</span>(i)</code></pre>
+  </div>
+
+  <h3 class="doc-h3">Foreach Loop</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">foreach.bq</span>
+    <pre><code><span class="kw">foreach</span> item <span class="kw">in</span> items
+    <span class="fn">print</span>(item)
+
+<span class="cm">// Key-value pairs</span>
+<span class="kw">foreach</span> key, value <span class="kw">in</span> user
+    <span class="fn">print</span>(key + <span class="st">": "</span> + value)</code></pre>
+  </div>
+
+  <h3 class="doc-h3">While Loop</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">while.bq</span>
+    <pre><code><span class="ty">int</span> retries = <span class="nm">3</span>
+<span class="kw">while</span> retries > <span class="nm">0</span>
+    result = <span class="fn">tryConnect</span>()
+    <span class="kw">if</span> (result) <span class="kw">break</span>
+    retries -= <span class="nm">1</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3">Switch / Case ✅</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">switch.bq</span>
+    <pre><code><span class="kw">switch</span> (status)
+    <span class="kw">case</span> <span class="st">"active"</span>:
+        <span class="kw">return</span> <span class="st">"User is active"</span>
+    <span class="kw">case</span> <span class="st">"banned"</span>:
+        <span class="kw">return</span> <span class="st">"User is banned"</span>
+    <span class="kw">default</span>:
+        <span class="kw">return</span> <span class="st">"Unknown"</span>
+
+<span class="cm">// Fallthrough</span>
+<span class="kw">switch</span> (role)
+    <span class="kw">case</span> <span class="st">"superadmin"</span>:
+    <span class="kw">case</span> <span class="st">"admin"</span>:
+        <span class="kw">return</span> <span class="st">"Has admin access"</span>
+    <span class="kw">default</span>:
+        <span class="kw">return</span> <span class="st">"No access"</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3">Error Handling — try/except ✅</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">error-handling.bq</span>
+    <pre><code><span class="kw">try</span>
+    <span class="ty">string</span> result = db.query(<span class="st">"SELECT ..."</span>)
+<span class="kw">except</span> <span class="ty">DatabaseException</span> <span class="kw">as</span> e
+    <span class="ty">Log</span>.error(e.message)
+    <span class="kw">return</span> <span class="kw">null</span>
+<span class="kw">except</span> <span class="ty">ConnectionException</span> <span class="kw">as</span> e
+    <span class="ty">Log</span>.critical(<span class="st">"DB offline: "</span> + e.message)
+    <span class="kw">return</span> <span class="kw">null</span>
+<span class="kw">finally</span>
+    db.close()
+
+<span class="cm">// Raising exceptions</span>
+<span class="kw">raise</span> <span class="kw">new</span> <span class="ty">NotFoundException</span>(<span class="st">"User not found"</span>)</code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     OOP
+════════════════════════════ -->
+<section id="oop">
+  <h2 class="doc-h2">Classes &amp; OOP</h2>
+
+  <div class="code-wrap">
+    <span class="code-lbl">app/Models/User.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Models</span>
+
+<span class="kw">class</span> <span class="ty">User</span>
+
+    <span class="kw">public</span>  <span class="ty">string</span> name
+    <span class="kw">private</span> <span class="ty">string</span> email
+    <span class="kw">private</span> <span class="ty">string</span> password
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">__construct</span>(<span class="ty">string</span> name, <span class="ty">string</span> email, <span class="ty">string</span> password)
+        this.name     = name
+        this.email    = email
+        this.password = <span class="ty">Hash</span>.bcrypt(password)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">getName</span>()
+        <span class="kw">return</span> this.name
+
+    <span class="at">#[Private]</span>
+    <span class="at">#[bool]</span>
+    <span class="kw">karo</span> <span class="fn">checkPassword</span>(<span class="ty">string</span> raw)
+        <span class="kw">return</span> <span class="ty">Hash</span>.verify(raw, this.password)</code></pre>
+  </div>
+
+  <h3 class="doc-h3">Inheritance</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">app/Models/Admin.bq</span>
+    <pre><code><span class="kw">class</span> <span class="ty">Admin</span> <span class="kw">extends</span> <span class="ty">User</span>
+
+    <span class="kw">private</span> <span class="ty">string</span> role
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">__construct</span>(<span class="ty">string</span> name, <span class="ty">string</span> email, <span class="ty">string</span> password, <span class="ty">string</span> role)
+        <span class="kw">parent</span>::__construct(name, email, password)
+        this.role = role
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">getRole</span>()
+        <span class="kw">return</span> this.role</code></pre>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — Abstract classes supported</strong>
+      <p><code>abstract class Shape</code> · <code>#[Abstract]</code> attribute on methods that have no body · subclasses must implement all abstract methods</p>
+    </div>
+  </div>
+
+  <h3 class="doc-h3" id="enums">Enums</h3>
+  <p>An enum is a type with a fixed set of named <strong>cases</strong>, like PHP 8.1. A <strong>pure</strong> enum has cases only; a <strong>backed</strong> enum — <code>#[String]</code> or <code>#[Int]</code> on the line above <code>enum Status</code> — gives every case a unique value — handy for database columns and JSON.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">enums.bq</span>
+    <pre><code><span class="kw">enum</span> <span class="ty">Suit</span>
+    <span class="kw">case</span> Hearts
+    <span class="kw">case</span> Spades
+
+<span class="at">#[String]</span>
+<span class="kw">enum</span> <span class="ty">Status</span>
+    <span class="kw">case</span> Active = <span class="st">"active"</span>
+    <span class="kw">case</span> Banned = <span class="st">"banned"</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">label</span>()
+        <span class="kw">return</span> this == <span class="ty">Status</span>::Active ? <span class="st">"Can log in"</span> : <span class="st">"Blocked"</span>
+
+<span class="ty">Status</span> s = <span class="ty">Status</span>::Active
+print(s.name, s.value, s.label())     <span class="cm">// Active active Can log in</span>
+<span class="ty">Status</span>::from(<span class="st">"banned"</span>)              <span class="cm">// Status::Banned</span>
+<span class="ty">Status</span>::tryFrom(<span class="st">"deleted"</span>)          <span class="cm">// null</span>
+<span class="ty">Status</span>::cases()                       <span class="cm">// #[Status::Active, Status::Banned]</span></code></pre>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Member</th><th>Pure</th><th>Backed</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td><code>Enum::Case</code></td><td>✅</td><td>✅</td><td>The case</td></tr>
+        <tr><td><code>case.name</code></td><td>✅</td><td>✅</td><td><code>string</code></td></tr>
+        <tr><td><code>case.value</code></td><td>—</td><td>✅</td><td><code>int</code> or <code>string</code></td></tr>
+        <tr><td><code>Enum::cases()</code></td><td>✅</td><td>✅</td><td>All cases, in order</td></tr>
+        <tr><td><code>Enum::from(v)</code></td><td>—</td><td>✅</td><td>Matching case, or raises <code>ValueException</code></td></tr>
+        <tr><td><code>Enum::tryFrom(v)</code></td><td>—</td><td>✅</td><td>Matching case, or <code>null</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Enums are types (<code>Status s</code>, <code>list&lt;Suit&gt;</code>), compare with <code>==</code>, work in <code>switch</code>, sets and as dict keys, and can have methods, static methods and constants — but no properties. Cases are read-only, <code>new Status()</code> is an error, and <code>Json.encode()</code> writes a backed case as its value.</p>
+
+  <div class="callout info">
+    <span class="c-icon">🟡</span>
+    <div class="c-body">
+      <strong>Implemented in v0.12 — provisional</strong>
+      <p>Static members (<code>#[Static]</code>), interfaces, traits (with <code>insteadof</code> / <code>as</code> rules since v0.13) and constructor promotion all work in the reference interpreter. The syntax below follows the spec's proposals and can still change.</p>
+    </div>
+  </div>
+
+  <h3 class="doc-h3" id="interfaces">Interfaces</h3>
+  <p>An interface lists methods (signatures only, always public) and constants. A class names it after <code>implements</code> and must provide every method — checked when the class loads. Interfaces are types, work with <code>is</code> and <code>except</code>, and can be bound in the container.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">interfaces.bq</span>
+    <pre><code><span class="kw">interface</span> <span class="ty">Shape</span>
+    <span class="kw">const</span> UNIT = <span class="st">"cm"</span>
+
+    <span class="at">#[float]</span>
+    <span class="kw">karo</span> <span class="fn">area</span>()
+
+<span class="kw">class</span> <span class="ty">Square</span> <span class="kw">extends</span> <span class="ty">Figure</span> <span class="kw">implements</span> <span class="ty">Shape</span>, <span class="ty">Named</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">__construct</span>(<span class="kw">public</span> <span class="ty">float</span> side = <span class="nm">1.0</span>)   <span class="cm">// constructor promotion</span>
+        <span class="kw">return</span>
+
+    <span class="at">#[float]</span>
+    <span class="kw">karo</span> <span class="fn">area</span>()
+        <span class="kw">return</span> this.side * this.side
+
+<span class="ty">list&lt;Shape&gt;</span> shapes = #[<span class="kw">new</span> <span class="ty">Square</span>(<span class="nm">2.0</span>), <span class="kw">new</span> <span class="ty">Square</span>()]
+print(shapes[<span class="nm">0</span>] <span class="kw">is</span> <span class="ty">Shape</span>, <span class="ty">Shape</span>::UNIT)     <span class="cm">// true cm</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3" id="traits">Traits &amp; Constructor Promotion</h3>
+  <p>A trait's properties, methods and constants are copied into every class that writes <code>use TraitName</code> — as if they were written there, so <code>private</code> members, <code>self::</code> and <code>__class__</code> refer to that class, and each class keeps its own static values. A method written in the class wins. The same method from two traits is an error, unless a rule under the <code>use</code> line picks one (below).</p>
+  <div class="code-wrap">
+    <span class="code-lbl">traits.bq</span>
+    <pre><code><span class="kw">trait</span> <span class="ty">HasSlug</span>
+    <span class="kw">public</span> <span class="ty">list&lt;string&gt;</span> history = #[]
+
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">slug</span>()
+        <span class="kw">return</span> <span class="ty">Str</span>.slug(this.slugSource())
+
+    <span class="at">#[Abstract]</span>
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">slugSource</span>()             <span class="cm">// the class must provide it</span>
+
+<span class="kw">class</span> <span class="ty">Article</span>
+    <span class="kw">use</span> <span class="ty">HasSlug</span>, <span class="ty">Timestamps</span>
+
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">__construct</span>(<span class="kw">public</span> <span class="ty">string</span> title)   <span class="cm">// declares and assigns this.title</span>
+        <span class="kw">return</span>
+
+    <span class="at">#[string]</span>
+    <span class="kw">karo</span> <span class="fn">slugSource</span>()
+        <span class="kw">return</span> this.title</code></pre>
+  </div>
+
+  <p><strong>Conflict rules (v0.13).</strong> PHP's <code>insteadof</code> and <code>as</code>, written in an indented block under the <code>use</code> line. An alias can still reach the method that <code>insteadof</code> dropped.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">trait-rules.bq</span>
+    <pre><code><span class="kw">class</span> <span class="ty">Person</span>
+    <span class="kw">use</span> <span class="ty">Hello</span>, <span class="ty">Salaam</span>
+        <span class="ty">Hello</span>::greet insteadof <span class="ty">Salaam</span>   <span class="cm">// Hello's greet() wins</span>
+        <span class="ty">Salaam</span>::greet <span class="kw">as</span> salaam         <span class="cm">// Salaam's stays reachable as salaam()</span>
+        wave <span class="kw">as</span> <span class="kw">protected</span>               <span class="cm">// new visibility</span>
+        wave <span class="kw">as</span> <span class="kw">public</span> waveHi           <span class="cm">// a renamed copy</span></code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     NAMESPACES
+════════════════════════════ -->
+<section id="namespaces">
+  <h2 class="doc-h2">Namespaces</h2>
+  <p>Declared at the top of the file. The <code>use</code> keyword imports classes from other namespaces.</p>
+
+  <div class="code-wrap">
+    <span class="code-lbl">app/Controllers/UserController.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Controllers</span>
+
+<span class="kw">use</span> <span class="ns">App\Models\User</span>
+<span class="kw">use</span> <span class="ns">App\Services\AuthService</span>
+
+<span class="cm">// Aliasing</span>
+<span class="kw">use</span> <span class="ns">App\Models\User</span> <span class="kw">as</span> <span class="ty">AppUser</span>
+
+<span class="cm">// Grouped imports</span>
+<span class="kw">use</span> <span class="ns">App\Models</span>\{<span class="ty">User</span>, <span class="ty">Post</span>, <span class="ty">Comment</span>}
+
+<span class="kw">class</span> <span class="ty">UserController</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[View]</span>
+    <span class="kw">karo</span> <span class="fn">show</span>(<span class="ty">int</span> id)
+        user = <span class="ty">User</span>::find(id)
+        <span class="kw">return</span> <span class="fn">view</span>(<span class="st">"users.show"</span>, #{user: user})</code></pre>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — Backslash separator</strong>
+      <p><code>App\Controllers\UserController</code> maps to <code>app/Controllers/UserController.bq</code></p>
+    </div>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     STANDARD LIBRARY
+════════════════════════════ -->
+<section id="stdlib">
+  <h2 class="doc-h2">Standard Library</h2>
+  <p>Barq ships with everything built in — no external packages required for any core task.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Module</th><th>Purpose</th><th>Key Functions</th></tr></thead>
+      <tbody>
+        <tr><td><code>Barq\IO</code></td><td>Files and console</td><td><code>IO.readFile()</code> <code>IO.writeFile()</code> <code>IO.listDir()</code></td></tr>
+        <tr><td><code>Barq\Path</code></td><td>File paths</td><td><code>Path.join()</code> <code>Path.extension()</code></td></tr>
+        <tr><td><code>Barq\Http</code></td><td>HTTP client + server</td><td><code>Http.get()</code> <code>Http.post()</code> <code>Http.serve()</code> <code>Http.abort()</code></td></tr>
+        <tr><td><code>Barq\Route</code></td><td>Router + middleware</td><td><code>Route.get()</code> <code>Route.group()</code> <code>Route.resource()</code> <code>Route.serve()</code></td></tr>
+        <tr><td><code>Barq\Session</code></td><td>Sessions (memory / file)</td><td><code>req.session().put()</code> <code>flash()</code> <code>regenerate()</code></td></tr>
+        <tr><td><code>Barq\Cookie</code></td><td>HTTP cookies</td><td><code>res.withCookie()</code> <code>req.cookie()</code> <code>Cookie.make()</code></td></tr>
+        <tr><td><code>Barq\Database</code></td><td>SQLite, query builder, schema</td><td><code>Database.connect()</code> <code>db.table()</code> <code>db.schema()</code></td></tr>
+        <tr><td><code>Barq\Validation</code></td><td>Input validation</td><td><code>Validation.make()</code> <code>Validation.validate()</code></td></tr>
+        <tr><td><code>Barq\Json</code></td><td>JSON</td><td><code>Json.encode()</code> <code>Json.decode()</code></td></tr>
+        <tr><td><code>Barq\Xml</code></td><td>XML parse / build</td><td><code>Xml.parse()</code> <code>Xml.toDict()</code> <code>Xml.fromDict()</code></td></tr>
+        <tr><td><code>Barq\Csv</code></td><td>CSV files</td><td><code>Csv.parse()</code> <code>Csv.write()</code></td></tr>
+        <tr><td><code>Barq\Mail</code></td><td>Email: SMTP, log, file</td><td><code>Mail.to().send()</code> <code>Mail.raw()</code> <code>Mail.fake()</code></td></tr>
+        <tr><td><code>Barq\Queue</code></td><td>Background jobs</td><td><code>Queue.push()</code> <code>Queue.later()</code> <code>Queue.work()</code></td></tr>
+        <tr><td><code>Barq\Cli</code></td><td>Command-line tools</td><td><code>Cli.option()</code> <code>Cli.ask()</code> <code>Cli.table()</code> <code>Cli.command()</code></td></tr>
+        <tr><td><code>Barq\Test</code></td><td>Unit + HTTP tests</td><td><code>Test.it()</code> <code>Test.assertEquals()</code> <code>Test.client()</code></td></tr>
+        <tr><td><code>Barq\Hash</code></td><td>Hashing, passwords</td><td><code>Hash.password()</code> <code>Hash.verify()</code> <code>Hash.sha256()</code></td></tr>
+        <tr><td><code>Barq\Crypto</code></td><td>Random tokens, JWT</td><td><code>Crypto.token()</code> <code>Crypto.jwtSign()</code></td></tr>
+        <tr><td><code>Barq\Date</code></td><td>Dates and times</td><td><code>Date.now()</code> <code>Date.format()</code> <code>Date.diff()</code></td></tr>
+        <tr><td><code>Barq\Math</code></td><td>Math</td><td><code>Math.abs()</code> <code>Math.round()</code> <code>Math.sqrt()</code></td></tr>
+        <tr><td><code>Barq\Str</code></td><td>String utilities</td><td><code>Str.upper()</code> <code>Str.slug()</code></td></tr>
+        <tr><td><code>Barq\Arr</code></td><td>List utilities</td><td><code>Arr.groupBy()</code> <code>Arr.chunk()</code> <code>Arr.unique()</code></td></tr>
+        <tr><td><code>Barq\Cache</code></td><td>In-memory cache</td><td><code>Cache.remember()</code> <code>Cache.get()</code></td></tr>
+        <tr><td><code>Barq\Config</code></td><td>Config files</td><td><code>Config.get()</code></td></tr>
+        <tr><td><code>Barq\Env</code></td><td>Environment, .env</td><td><code>Env.get()</code> <code>Env.load()</code></td></tr>
+        <tr><td><code>Barq\Log</code></td><td>Logging</td><td><code>Log.info()</code> <code>Log.error()</code></td></tr>
+        <tr><td><code>Barq\Uuid</code></td><td>UUIDs</td><td><code>Uuid.v4()</code> <code>Uuid.v7()</code></td></tr>
+        <tr><td><code>Barq\Regex</code></td><td>Regular expressions</td><td><code>Regex.match()</code> <code>Regex.replace()</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="doc-h3">Global Built-ins (always available)</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">globals</span>
+    <pre><code><span class="fn">print</span>(value)       <span class="cm">// print to output</span>
+<span class="fn">dump</span>(value)        <span class="cm">// debug print with type info</span>
+<span class="fn">die</span>(<span class="st">"message"</span>)    <span class="cm">// stop execution</span>
+<span class="fn">type</span>(value)        <span class="cm">// returns type name as string</span>
+<span class="fn">range</span>(n)           <span class="cm">// number sequence</span>
+<span class="fn">len</span>(value)         <span class="cm">// length of string or list</span>
+<span class="fn">int</span>(x)             <span class="cm">// cast to integer</span>
+<span class="fn">string</span>(x)          <span class="cm">// cast to string</span>
+<span class="fn">isset</span>(var)         <span class="cm">// true if set and not null</span>
+<span class="fn">empty</span>(var)         <span class="cm">// true if null, 0, "", [], false</span></code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     DATABASE
+════════════════════════════ -->
+<section id="database">
+  <h2 class="doc-h2">Database Layer</h2>
+  <p>All connectors ship with the language — no external driver packages needed.</p>
+
+  <div class="db-grid">
+    <div class="db-card core"><div class="db-name">MySQL</div><div class="db-type">Relational · SQL</div></div>
+    <div class="db-card core"><div class="db-name">MariaDB</div><div class="db-type">Relational · SQL</div></div>
+    <div class="db-card core"><div class="db-name">PostgreSQL</div><div class="db-type">Relational · SQL</div></div>
+    <div class="db-card core"><div class="db-name">SQLite</div><div class="db-type">Embedded · SQL</div></div>
+    <div class="db-card core"><div class="db-name">MongoDB</div><div class="db-type">Document · NoSQL</div></div>
+    <div class="db-card plan"><div class="db-name">Redis</div><div class="db-type">Key-Value · Cache</div></div>
+    <div class="db-card plan"><div class="db-name">MS SQL</div><div class="db-type">Relational · SQL</div></div>
+    <div class="db-card plan"><div class="db-name">Cassandra</div><div class="db-type">Wide-Column</div></div>
+  </div>
+  <p style="font-size:.78rem;color:var(--fg-subtle)">Green border = core release · Orange = planned</p>
+
+  <h3 class="doc-h3">Query Builder — SQL</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">queries.bq</span>
+    <pre><code><span class="cm">// Select</span>
+users = db.table(<span class="st">"users"</span>)
+           .where(<span class="st">"active"</span>, <span class="nm">1</span>)
+           .orderBy(<span class="st">"name"</span>)
+           .limit(<span class="nm">10</span>)
+           .get()
+
+user = db.table(<span class="st">"users"</span>).where(<span class="st">"id"</span>, <span class="nm">1</span>).first()
+
+<span class="cm">// Insert</span>
+db.table(<span class="st">"users"</span>).insert(#{name: <span class="st">"Alice"</span>, email: <span class="st">"alice@example.com"</span>})
+
+<span class="cm">// Update</span>
+db.table(<span class="st">"users"</span>).where(<span class="st">"id"</span>, <span class="nm">1</span>).update(#{name: <span class="st">"Alice B."</span>})
+
+<span class="cm">// Delete</span>
+db.table(<span class="st">"users"</span>).where(<span class="st">"id"</span>, <span class="nm">1</span>).delete()
+
+<span class="cm">// Raw SQL — parameterized</span>
+result = db.raw(<span class="st">"SELECT * FROM users WHERE id = ?"</span>, #[<span class="nm">1</span>])</code></pre>
+  </div>
+
+  <h3 class="doc-h3">Transactions</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">transaction.bq</span>
+    <pre><code>db.transaction(<span class="kw">karo</span>(): <span class="ty">void</span>
+    db.table(<span class="st">"accounts"</span>).where(<span class="st">"id"</span>, fromId).decrement(<span class="st">"balance"</span>, amount)
+    db.table(<span class="st">"accounts"</span>).where(<span class="st">"id"</span>, toId).increment(<span class="st">"balance"</span>, amount)
+)</code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     FRONTEND
+════════════════════════════ -->
+<section id="frontend">
+  <h2 class="doc-h2">Frontend &amp; Templates</h2>
+  <p>Barq uses HTML-like custom tags for logic. Output uses <code>{variable}</code> syntax. All output is HTML-escaped by default.</p>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Decided — Barq-native HTML tags</strong>
+      <p><code>&lt;each&gt;</code> · <code>&lt;if&gt;</code> · <code>&lt;elseif&gt;</code> · <code>&lt;else&gt;</code> · <code>&lt;include /&gt;</code> · <code>&lt;extends /&gt;</code></p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">views/users/index.bq</span>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+    &lt;h1&gt;Welcome, {auth.name}&lt;/h1&gt;
+
+    &lt;if condition="{users.count == 0}"&gt;
+        &lt;p&gt;No users found.&lt;/p&gt;
+    &lt;else&gt;
+        &lt;each user in {users}&gt;
+            &lt;div&gt;
+                &lt;strong&gt;{user.name}&lt;/strong&gt; — {user.email}
+            &lt;/div&gt;
+        &lt;/each&gt;
+    &lt;/if&gt;
+
+    &lt;include file="partials/footer" /&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+
+  <h3 class="doc-h3">Template Tag Reference</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tag</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>&lt;each var in {col}&gt;</code></td><td>Loop over list, dict, or query result</td></tr>
+        <tr><td><code>&lt;each i, var in {col}&gt;</code></td><td>Loop with index</td></tr>
+        <tr><td><code>&lt;if condition="{expr}"&gt;</code></td><td>Conditional block</td></tr>
+        <tr><td><code>&lt;elseif condition="{expr}"&gt;</code></td><td>Else-if branch</td></tr>
+        <tr><td><code>&lt;else&gt;</code></td><td>Else branch — no closing tag, closed by <code>&lt;/if&gt;</code></td></tr>
+        <tr><td><code>&lt;include file="path" /&gt;</code></td><td>Include a partial template</td></tr>
+        <tr><td><code>&lt;extends layout="name" /&gt;</code></td><td>Inherit a layout</td></tr>
+        <tr><td><code>&lt;section name="name"&gt;</code></td><td>Define a named section</td></tr>
+        <tr><td><code>&lt;yield name="name" /&gt;</code></td><td>Output a section (in layout)</td></tr>
+        <tr><td><code>{variable}</code></td><td>Output — HTML-escaped</td></tr>
+        <tr><td><code>{!variable!}</code></td><td>Raw output — unescaped (explicit opt-in)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     MVC FRAMEWORK
+════════════════════════════ -->
+<section id="framework">
+  <h2 class="doc-h2">MVC Framework</h2>
+
+  <h3 class="doc-h3">Project Structure</h3>
+  <pre><code>myapp/
+├── app/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Middleware/
+│   ├── Providers/
+│   ├── Requests/
+│   └── Resources/
+├── config/
+│   ├── app.bq
+│   └── database.bq
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+├── routes/
+│   ├── web.bq
+│   └── api.bq
+├── views/
+├── public/
+├── storage/
+├── tests/
+├── .env
+└── main.bq</code></pre>
+</section>
+
+<!-- ════════════════════════
+     ROUTING
+════════════════════════════ -->
+<section id="routing">
+  <h2 class="doc-h2">Routing</h2>
+  <p>Routes map a method and a path to a handler: a function, or <code>#[Controller, "method"]</code>. Write parameters as <code>:id</code>. Inside <code>"double quotes"</code>, <code>{id}</code> would be string interpolation, so the <code>{id}</code> form only works in <code>'single quotes'</code>.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">main.bq</span>
+    <pre><code><span class="kw">use</span> <span class="ns">App\Controllers\UserController</span>
+
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/"</span><span class="pu">,</span> <span class="kw">kr</span><span class="pu">():</span> <span class="ty">string</span> <span class="pu">=&gt;</span> <span class="st">"&lt;h1&gt;Home&lt;/h1&gt;"</span><span class="pu">)</span>.name(<span class="st">"home"</span>)
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/users/:id"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">UserController</span><span class="pu">,</span> <span class="st">"show"</span><span class="pu">]</span><span class="pu">)</span>.whereNumber(<span class="st">"id"</span>)
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">"/users"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">UserController</span><span class="pu">,</span> <span class="st">"store"</span><span class="pu">]</span><span class="pu">)</span>
+
+<span class="cm">// Handler arguments are filled by type: Request, then route parameters</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/sum/:a/:b"</span><span class="pu">,</span> <span class="kw">kr</span>(<span class="ty">int</span> a, <span class="ty">int</span> b): <span class="ty">int</span> =&gt; a + b<span class="pu">)</span>
+
+<span class="ty">Route</span>.serve(#{<span class="st">"port"</span>: 8000})</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">resources &amp; groups</span>
+    <pre><code><span class="cm">// index, create, store, show, edit, update, destroy — whichever the controller has</span>
+<span class="ty">Route</span>.resource(<span class="st">"users"</span>, <span class="ty">UserController</span>)
+
+<span class="cm">// Group with a URL prefix, middleware and a name prefix</span>
+<span class="ty">Route</span>.group(#{<span class="st">"prefix"</span>: <span class="st">"api/v1"</span>, <span class="st">"middleware"</span>: <span class="st">"auth"</span>, <span class="st">"name"</span>: <span class="st">"api."</span>}, <span class="kw">karo</span>(): <span class="ty">void</span>
+    <span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/profile"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">UserController</span><span class="pu">,</span> <span class="st">"profile"</span><span class="pu">]</span><span class="pu">)</span>.name(<span class="st">"profile"</span>)
+)
+
+<span class="ty">Route</span>.url(<span class="st">"api.profile"</span>)   <span class="cm">// returns /api/v1/profile</span></code></pre>
+  </div>
+
+  <h3 class="doc-h3">Middleware</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">app/Middleware/Auth.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Middleware</span>
+
+<span class="kw">class</span> <span class="ty">Auth</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[any]</span>
+    <span class="kw">karo</span> <span class="fn">handle</span>(<span class="ty">Request</span> req, <span class="ty">any</span> next)
+        <span class="kw">if</span> (<span class="kw">not</span> req.session().has(<span class="st">"user_id"</span>))
+            <span class="kw">return</span> <span class="ty">Response</span>.redirect(<span class="st">"/login"</span>)
+        <span class="kw">return</span> <span class="fn">next</span>(req)</code></pre>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">main.bq</span>
+    <pre><code><span class="ty">Route</span>.alias(<span class="st">"auth"</span>, <span class="ty">Auth</span>)
+<span class="ty">Route</span>.globalMiddleware(<span class="kw">karo</span>(<span class="ty">Request</span> req, <span class="ty">any</span> next): <span class="ty">any</span>
+    <span class="ty">Response</span> res = <span class="fn">next</span>(req)
+    <span class="kw">return</span> res.withHeader(<span class="st">"X-Powered-By"</span>, <span class="st">"Barq"</span>)
+)</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     MODELS & ORM
+════════════════════════════ -->
+<section id="models">
+  <h2 class="doc-h2">Models &amp; ORM</h2>
+  <div class="code-wrap">
+    <span class="code-lbl">app/Models/User.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Models</span>
+
+<span class="kw">class</span> <span class="ty">User</span> <span class="kw">extends</span> <span class="ty">Model</span>
+
+    <span class="kw">protected</span> table    = <span class="st">"users"</span>
+    <span class="kw">protected</span> fillable = #[<span class="st">"name"</span>, <span class="st">"email"</span>, <span class="st">"password"</span>]
+    <span class="kw">protected</span> hidden   = #[<span class="st">"password"</span>]
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[HasMany]</span>
+    <span class="kw">karo</span> <span class="fn">posts</span>()
+        <span class="kw">return</span> this.hasMany(<span class="ty">Post</span>::class)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[HasOne]</span>
+    <span class="kw">karo</span> <span class="fn">profile</span>()
+        <span class="kw">return</span> this.hasOne(<span class="ty">Profile</span>::class)</code></pre>
+  </div>
+
+  <h3 class="doc-h3">ORM Queries</h3>
+  <div class="code-wrap">
+    <span class="code-lbl">usage.bq</span>
+    <pre><code>users = <span class="ty">User</span>.all()
+user  = <span class="ty">User</span>.find(<span class="nm">1</span>)
+user  = <span class="ty">User</span>.findOrFail(<span class="nm">1</span>)                 <span class="cm">// 404 if not found</span>
+users = <span class="ty">User</span>.where(<span class="st">"active"</span>, <span class="nm">1</span>).get()
+users = <span class="ty">User</span>.where(<span class="st">"age"</span>, <span class="st">">"</span>, <span class="nm">18</span>).orderBy(<span class="st">"name"</span>).get()
+
+user  = <span class="ty">User</span>.create(#{name: <span class="st">"Alice"</span>, email: <span class="st">"alice@example.com"</span>})
+
+user  = <span class="ty">User</span>.find(<span class="nm">1</span>)
+user.name = <span class="st">"Alice B."</span>
+user.save()
+
+user.delete()
+users = <span class="ty">User</span>.paginate(<span class="nm">15</span>)</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     MIGRATIONS
+════════════════════════════ -->
+<section id="migrations">
+  <h2 class="doc-h2">Migrations &amp; Seeders</h2>
+  <div class="code-wrap">
+    <span class="code-lbl">database/migrations/create_users_table.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">Database\Migrations</span>
+
+<span class="kw">class</span> <span class="ty">CreateUsersTable</span> <span class="kw">extends</span> <span class="ty">Migration</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">up</span>(<span class="ty">Schema</span> schema)
+        schema.create(<span class="st">"users"</span>, <span class="kw">karo</span>(<span class="ty">Blueprint</span> table): <span class="ty">void</span>
+            table.id()
+            table.string(<span class="st">"name"</span>)
+            table.string(<span class="st">"email"</span>).unique()
+            table.string(<span class="st">"password"</span>)
+            table.int(<span class="st">"age"</span>).nullable()
+            table.bool(<span class="st">"active"</span>).default(<span class="kw">true</span>)
+            table.timestamps()
+        )
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">down</span>(<span class="ty">Schema</span> schema)
+        schema.dropIfExists(<span class="st">"users"</span>)</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">database/seeders/UserSeeder.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">Database\Seeders</span>
+
+<span class="kw">class</span> <span class="ty">UserSeeder</span> <span class="kw">extends</span> <span class="ty">Seeder</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">run</span>()
+        <span class="ty">User</span>.create(#{
+            name:     <span class="st">"Admin"</span>,
+            email:    <span class="st">"admin@example.com"</span>,
+            password: <span class="ty">Hash</span>.bcrypt(<span class="st">"password"</span>)
+        })</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     PROVIDERS, EVENTS & FACTORIES
+════════════════════════════ -->
+<section id="providers">
+  <h2 class="doc-h2">Providers, Events &amp; Factories</h2>
+  <p>Service providers start the app: every provider's <code>register()</code> binds services into the container, then every provider's <code>boot()</code> wires up listeners and observers. <code>barq run</code>, <code>barq test</code> and <code>barq serve</code> boot them automatically.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">app/Providers/AppServiceProvider.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Providers</span>
+
+<span class="kw">class</span> <span class="ty">AppServiceProvider</span> <span class="kw">extends</span> <span class="ty">ServiceProvider</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">register</span>()
+        <span class="kw">this</span>.app.singleton(<span class="ty">PaymentGateway</span>)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[void]</span>
+    <span class="kw">karo</span> <span class="fn">boot</span>()
+        <span class="ty">User</span>.observe(<span class="ty">UserObserver</span>)
+        <span class="ty">Event</span>.listen(<span class="st">"user.*"</span>, <span class="kw">karo</span>(<span class="ty">string</span> name, <span class="ty">any</span> data): <span class="ty">void</span>
+            <span class="ty">Log</span>.info(<span class="st">"user event: {name}"</span>)
+        )</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">Model events &amp; soft deletes</span>
+    <pre><code><span class="ty">User</span>.created(<span class="kw">kr</span>(<span class="ty">User</span> u): <span class="ty">void</span> => <span class="ty">Log</span>.info(<span class="st">"new user {u.id}"</span>))
+<span class="ty">User</span>.deleting(<span class="kw">kr</span>(<span class="ty">User</span> u): <span class="ty">bool</span> => <span class="kw">not</span> u.isAdmin())    <span class="cm">// false cancels</span>
+
+<span class="kw">class</span> <span class="ty">Post</span> <span class="kw">extends</span> <span class="ty">Model</span>
+    <span class="kw">protected</span> <span class="ty">bool</span> softDeletes = <span class="kw">true</span>
+
+post.delete()                  <span class="cm">// sets deleted_at</span>
+<span class="ty">Post</span>.withTrashed().get()       <span class="cm">// or onlyTrashed()</span>
+post.restore()</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">database/factories/UserFactory.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">Database\Factories</span>
+
+<span class="kw">class</span> <span class="ty">UserFactory</span> <span class="kw">extends</span> <span class="ty">Factory</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[dict&lt;string, any&gt;]</span>
+    <span class="kw">karo</span> <span class="fn">definition</span>()
+        <span class="kw">return</span> #{
+            <span class="st">"name"</span>:  <span class="ty">Fake</span>.name(),
+            <span class="st">"email"</span>: <span class="ty">Fake</span>.unique().email()
+        }
+
+<span class="cm">// in a seeder or a test</span>
+<span class="ty">User</span>.factory().count(<span class="nu">10</span>).has(<span class="ty">Post</span>.factory().count(<span class="nu">3</span>)).create()</code></pre>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Built in v0.10.0-alpha</strong>
+      <p><code>barq serve</code> serves <code>routes/web.bq</code> and <code>routes/api.bq</code> (under <code>/api</code>) and restarts when you save a file. <code>barq route:list</code>, <code>make:factory</code>, <code>make:provider</code> and <code>make:observer</code> are new too.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     AUTH, STORAGE & SCHEDULER
+════════════════════════════ -->
+<section id="auth">
+  <h2 class="doc-h2">Auth, Storage &amp; Scheduler</h2>
+  <p><code>Auth</code> logs users in with a session (the <code>web</code> guard) or a Bearer token (the <code>api</code> guard). <code>Gate</code> and policies decide what a user may do. Passwords are checked against <code>Hash.password()</code> hashes.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">routes/web.bq</span>
+    <pre><code><span class="ty">Route</span>.post(<span class="st">"/login"</span>, <span class="kw">karo</span>(<span class="ty">Request</span> req): <span class="ty">any</span>
+    <span class="kw">if</span> <span class="ty">Auth</span>.attempt(#{<span class="st">"email"</span>: req.input(<span class="st">"email"</span>), <span class="st">"password"</span>: req.input(<span class="st">"password"</span>)})
+        <span class="kw">return</span> <span class="ty">Response</span>.redirect(<span class="st">"/dashboard"</span>)
+    <span class="kw">return</span> <span class="ty">Response</span>.redirect(<span class="st">"/login"</span>)
+).middleware(<span class="st">"guest"</span>)
+
+<span class="ty">Route</span>.get(<span class="st">"/dashboard"</span>, <span class="kw">kr</span>(<span class="ty">Request</span> req): <span class="ty">string</span> => <span class="st">"Hi "</span> + req.user().name).middleware(<span class="st">"auth"</span>)
+<span class="ty">Route</span>.put(<span class="st">"/posts/:post"</span>, #[<span class="ty">PostController</span>, <span class="st">"update"</span>]).middleware(#[<span class="st">"auth"</span>, <span class="st">"can:update,post"</span>])
+<span class="ty">Route</span>.get(<span class="st">"/api/me"</span>, <span class="kw">kr</span>(): <span class="ty">any</span> => <span class="ty">Auth</span>.user()).middleware(<span class="st">"auth:api"</span>)</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">API tokens &amp; authorization</span>
+    <pre><code><span class="ty">NewAccessToken</span> t = user.createToken(<span class="st">"cli"</span>, #[<span class="st">"posts:read"</span>])
+print(t.plainTextToken)              <span class="cm">// shown once; only a hash is stored</span>
+user.tokenCan(<span class="st">"posts:read"</span>)
+
+<span class="ty">Gate</span>.define(<span class="st">"see-dashboard"</span>, <span class="kw">kr</span>(<span class="ty">User</span> u): <span class="ty">bool</span> => u.age >= <span class="nu">18</span>)
+user.can(<span class="st">"update"</span>, post)            <span class="cm">// App\Policies\PostPolicy, found automatically</span>
+<span class="ty">Gate</span>.authorize(<span class="st">"delete"</span>, post)       <span class="cm">// AuthorizationException → 403</span></code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">Storage &amp; routes/console.bq</span>
+    <pre><code><span class="ty">Storage</span>.put(<span class="st">"reports/jan.txt"</span>, text)          <span class="cm">// storage/app/</span>
+<span class="ty">Storage</span>.disk(<span class="st">"public"</span>).url(<span class="st">"avatars/42.png"</span>)    <span class="cm">// /storage/avatars/42.png</span>
+<span class="ty">Storage</span>.fake(<span class="st">"public"</span>)                         <span class="cm">// in memory, for tests</span>
+
+<span class="ty">Schedule</span>.call(<span class="kw">karo</span>(): <span class="ty">void</span>
+    <span class="ty">Storage</span>.deleteDirectory(<span class="st">"tmp"</span>)
+).dailyAt(<span class="st">"03:00"</span>)
+<span class="ty">Schedule</span>.job(<span class="kw">new</span> <span class="ty">SendReport</span>()).weekdays().at(<span class="st">"08:00"</span>)
+<span class="ty">Schedule</span>.exec(<span class="st">"./backup.sh"</span>).cron(<span class="st">"0 3 * * 1-5"</span>).withoutOverlapping()</code></pre>
+  </div>
+
+  <h3 class="doc-h3" id="auth-pages">Login, registration &amp; two-factor pages</h3>
+  <p><code>barq auth:install</code> writes ordinary app code you can edit: <code>routes/auth.bq</code>, seven controllers in <code>app/Controllers/Auth/</code>, views in <code>views/auth/</code>, the migrations, <code>config/auth.bq</code> and an <code>APP_KEY</code> in <code>.env</code>. You get registration, login with "remember me", logout, forgotten-password emails, email verification and two-factor authentication with a QR code and recovery codes.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">terminal</span>
+    <pre><code>barq auth:install
+barq migrate
+barq serve            <span class="cm"># open http://127.0.0.1:8000/register</span></code></pre>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">The pieces the pages use</span>
+    <pre><code><span class="ty">Password</span>.sendResetLink(#{<span class="st">"email"</span>: email})   <span class="cm">// "passwords.sent", "passwords.user", "passwords.throttled"</span>
+<span class="ty">Password</span>.reset(#{<span class="st">"email"</span>: e, <span class="st">"token"</span>: t, <span class="st">"password"</span>: p})
+
+user.sendEmailVerificationNotification()    <span class="cm">// a signed link to the "verification.verify" route</span>
+<span class="ty">Route</span>.get(<span class="st">"/dashboard"</span>, ...).middleware(#[<span class="st">"auth"</span>, <span class="st">"verified"</span>])
+
+<span class="ty">string</span> secret = user.enableTwoFactor()     <span class="cm">// then user.confirmTwoFactor(code)</span>
+user.twoFactorQrCodeSvg()                   <span class="cm">// scan with Google Authenticator, Authy…</span>
+<span class="ty">string</span> result = <span class="ty">TwoFactor</span>.attempt(creds)   <span class="cm">// "login", "two-factor" or "failed"</span>
+<span class="ty">TwoFactor</span>.complete(code)                   <span class="cm">// the app's code, or a recovery code</span>
+
+<span class="ty">URL</span>.temporarySignedRoute(<span class="st">"unsubscribe"</span>, <span class="nu">60</span>, #{<span class="st">"id"</span>: <span class="nu">3</span>})
+<span class="ty">Route</span>.post(<span class="st">"/login"</span>, ...).middleware(<span class="st">"throttle:5,1"</span>)</code></pre>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">Forms: CSRF, errors and old input</span>
+    <pre><code>&lt;form method="POST" action="/profile"&gt;
+    {!csrf_field()!}  {!method_field("PUT")!}
+    &lt;input name="email" value="{old("email", "")}"&gt;
+    &lt;if condition="{errors.has("email")}"&gt;&lt;p&gt;{errors.first("email")}&lt;/p&gt;&lt;/if&gt;
+&lt;/form&gt;
+
+<span class="cm">// in the controller: a failed check goes back to the form with errors and input</span>
+<span class="ty">dict</span>&lt;<span class="ty">string</span>, <span class="ty">any</span>&gt; data = req.validate(#{<span class="st">"email"</span>: <span class="st">"required|email"</span>})
+<span class="kw">return</span> back().with(<span class="st">"status"</span>, <span class="st">"Saved"</span>)</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <span class="code-lbl">social login, teams, devices</span>
+    <pre><code><span class="cm">// /auth/google → Google → /auth/google/callback</span>
+<span class="kw">return</span> OAuth.driver(<span class="st">"google"</span>).redirect()
+<span class="ty">OAuthUser</span> u = OAuth.driver(<span class="st">"google"</span>).user()      <span class="cm">// u.id, u.email, u.emailVerified, u.avatar</span>
+
+<span class="cm">// teams: class Team extends TeamModel</span>
+<span class="ty">Team</span> team = Team.create(#{<span class="st">"name"</span>: <span class="st">"Acme"</span>, <span class="st">"user_id"</span>: auth().id()})
+team.addMember(user, role: <span class="st">"admin"</span>)
+team.invite(<span class="st">"bob@example.com"</span>)                  <span class="cm">// emails a link; Team.acceptInvitation(token)</span>
+user.currentTeam()   user.switchTeam(team)   user.hasTeamRole(team, <span class="st">"admin"</span>)
+
+<span class="cm">// devices</span>
+user.sessions()                                  <span class="cm">// browser, platform, ip, lastActive, current</span>
+Auth.logoutOtherDevices(password)
+<span class="kw">return</span> intended(<span class="st">"/dashboard"</span>)                   <span class="cm">// back to the page asked for before logging in</span></code></pre>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Built in v0.11.0, v0.14.0 and v0.15.0-alpha — now in barq-auth and barq-framework</strong>
+      <p>Commands: <code>barq auth:install</code>, <code>barq key:generate</code>, <code>barq make:policy</code>, <code>barq storage:link</code>, and <code>barq schedule:run</code> / <code>schedule:list</code> / <code>schedule:work</code>. One cron line, <code>* * * * * barq schedule:run</code>, runs every task. <code>auth:install</code> also writes the pages for Google, Facebook and GitHub login, teams with invitations, and the list of logged-in devices. Tests can fake outside APIs with <code>Http.fake()</code>.</p>
+    </div>
+  </div>
+
+  <h3 class="doc-h3" id="auth-permissions">Roles &amp; permissions</h3>
+  <p>Give users roles, give roles permissions, and check them anywhere: in code, in routes and in views. <code>user.can()</code> asks the permissions first, so the Gate, policies and the <code>can:</code> middleware all see them. A granted <code>posts.*</code> covers <code>posts.create</code>, and the super admin role passes every check.</p>
+  <div class="code-wrap">
+    <span class="code-lbl">terminal</span>
+    <pre><code>barq permissions:install      <span class="cm"># tables migration, config/permissions.bq, an example seeder</span>
+barq migrate
+barq permissions:assign-role ali@shop.test admin</code></pre>
+  </div>
+  <div class="code-wrap">
+    <span class="code-lbl">Roles, permissions and checks</span>
+    <pre><code><span class="ty">Role</span> editor = <span class="ty">Role</span>.create(<span class="st">"editor"</span>)
+editor.givePermissionTo(<span class="st">"edit posts"</span>, <span class="st">"publish posts"</span>)
+
+user.assignRole(<span class="st">"editor"</span>)
+user.givePermissionTo(<span class="st">"delete posts"</span>)       <span class="cm">// directly, without a role</span>
+user.hasRole(<span class="st">"editor"</span>)                     <span class="cm">// true</span>
+user.can(<span class="st">"publish posts"</span>)                  <span class="cm">// true: through the editor role</span>
+user.assignRole(<span class="st">"admin"</span>, team: acme)        <span class="cm">// only inside one team</span>
+
+<span class="ty">Route</span>.get(<span class="st">"/admin"</span>, ...).middleware(<span class="st">"role:admin"</span>)
+<span class="ty">Route</span>.put(<span class="st">"/posts/:id"</span>, ...).middleware(<span class="st">"permission:edit posts|publish posts"</span>)
+
+&lt;if condition="{auth().user().hasRole('admin')}"&gt;...&lt;/if&gt;</code></pre>
+  </div>
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
+      <strong>Built in v0.16.0-alpha — now in barq-permissions</strong>
+      <p>Also: <code>barq permissions:list-roles</code>, <code>list-permissions</code>, <code>show-role</code>, <code>show-user</code>, <code>create-role</code>, <code>create-permission</code> and <code>cache-reset</code>. Any model can have roles, and permissions can be given for one guard (<code>web</code>, <code>api</code>) or one team.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     REST API
+════════════════════════════ -->
+<section id="api">
+  <h2 class="doc-h2">REST API</h2>
+  <div class="code-wrap">
+    <span class="code-lbl">app/Controllers/Api/PostController.bq</span>
+    <pre><code><span class="kw">namespace</span> <span class="ns">App\Controllers\Api</span>
+
+<span class="kw">use</span> <span class="ns">App\Models\Post</span>
+<span class="kw">use</span> <span class="ns">App\Resources\PostResource</span>
+
+<span class="kw">class</span> <span class="ty">PostController</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[Response]</span>
+    <span class="kw">karo</span> <span class="fn">index</span>()
+        posts = <span class="ty">Post</span>.orderBy(<span class="st">"created_at"</span>, <span class="st">"desc"</span>).paginate(<span class="nm">20</span>)
+        <span class="kw">return</span> <span class="ty">PostResource</span>.collection(posts)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[PostResource]</span>
+    <span class="kw">karo</span> <span class="fn">show</span>(<span class="ty">int</span> id)
+        post = <span class="ty">Post</span>.findOrFail(id)
+        <span class="kw">return</span> <span class="kw">new</span> <span class="ty">PostResource</span>(post)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[PostResource]</span>
+    <span class="kw">karo</span> <span class="fn">store</span>(<span class="ty">PostStoreRequest</span> request)
+        post = <span class="ty">Post</span>.create(request.validated())
+        <span class="kw">return</span> <span class="kw">new</span> <span class="ty">PostResource</span>(post)
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[Response]</span>
+    <span class="kw">karo</span> <span class="fn">destroy</span>(<span class="ty">int</span> id)
+        <span class="ty">Post</span>.findOrFail(id).delete()
+        <span class="kw">return</span> <span class="fn">response</span>().json(#{message: <span class="st">"Deleted"</span>})</code></pre>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     VERSIONING
+════════════════════════════ -->
+<section id="versioning">
+  <h2 class="doc-h2">Versioning</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Version</th><th>Name</th><th>Key Milestone</th></tr></thead>
+      <tbody>
+        <tr><td><span class="v-badge v-spec">0.1.0</span> Spec</td><td>Language Design</td><td>Language specification complete, all decisions resolved</td></tr>
+        <tr><td><span class="v-badge v-spec">0.2.0</span> Interp</td><td>Interpreter</td><td>Tree-walk interpreter, run .bq scripts</td></tr>
+        <tr><td><span class="v-badge v-spec">0.5.0</span> VM</td><td>Bytecode VM</td><td>Bytecode compiler + VM, ~10× faster</td></tr>
+        <tr><td><span class="v-badge v-spec">0.8.0</span> Stdlib</td><td>Standard Library</td><td>Full standard library, DB connectors, HTTP server</td></tr>
+        <tr><td><span class="v-badge v-stable">1.0.0</span> Stable</td><td>First Release</td><td>Linux · macOS · Windows native binaries</td></tr>
+        <tr><td><span class="v-badge v-stable">1.1.0</span> FW</td><td>Framework</td><td>Official MVC framework released</td></tr>
+        <tr><td><span class="v-badge v-stable">1.2.0</span> Blog</td><td>Reference App</td><td>Blog reference app — real-world proof of capability</td></tr>
+        <tr><td><span class="v-badge v-stable">1.3.0</span> Site</td><td>Official Site</td><td>Official website launches — built entirely in Barq</td></tr>
+        <tr><td><span class="v-badge v-stable">2.0.0</span> Native</td><td>Native</td><td>Optional native compilation, async/await, production VM</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     ROADMAP
+════════════════════════════ -->
+<section id="roadmap">
+  <h2 class="doc-h2">Roadmap</h2>
+  <div class="rm-grid">
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p1">Phase 1 — Spec</div>
+      <strong>Language Design</strong>
+      <ul><li>Resolve all open decisions</li><li>Choose Urdu name</li><li>Write formal grammar</li><li>Finalize stdlib API</li></ul>
+    </div>
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p2">Phase 2 — Runtime</div>
+      <strong>Interpreter + VM</strong>
+      <ul><li>Lexer + Parser</li><li>Tree-walk interpreter</li><li>Bytecode VM</li><li>DB connectors</li></ul>
+    </div>
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p3">Phase 3 — Platform</div>
+      <strong>Cross-Platform</strong>
+      <ul><li>Linux x64 + ARM binary</li><li>macOS Intel + Apple Silicon</li><li>Windows x64 (.exe)</li><li>One-click installer</li></ul>
+    </div>
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p3">Phase 4 — Framework</div>
+      <strong>MVC Framework</strong>
+      <ul><li>Router + Middleware</li><li>ORM + Migrations</li><li>Template engine</li><li>REST API support</li></ul>
+    </div>
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p4">Phase 5 — Blog App</div>
+      <strong>Reference App</strong>
+      <ul><li>Full blog in Barq</li><li>Auth, posts, comments</li><li>REST API</li><li>Proves real-world use</li></ul>
+    </div>
+    <div class="rm-phase">
+      <div class="ph-lbl ph-p4">Phase 6 — Website</div>
+      <strong>Official Site</strong>
+      <ul><li>Built in Barq framework</li><li>Docs + interactive learn</li><li>Live playground</li><li>Download + packages</li></ul>
+    </div>
+  </div>
+</section>
+
+<hr class="doc-rule">
+
+<!-- ════════════════════════
+     OPEN DECISIONS
+════════════════════════════ -->
+<section id="decisions">
+  <h2 class="doc-h2">Open Decisions</h2>
+  <p>All decisions pending author input. High-priority decisions are listed first.</p>
+
+  <div class="priority-box">
+    <strong>High-Priority Decisions:</strong>
+    <ol>
+      <li><strong>#1 — Language name</strong> (choose from Urdu candidates below)</li>
+      <li><strong>Null safety operator</strong> — <code>?.</code> vs explicit null checks only</li>
+      <li><strong>Static access syntax</strong> — <code>Class::member</code> vs <code>Class.member</code></li>
+      <li><strong>VM implementation language</strong> — Python reference first, then Rust / C / Go</li>
+      <li><strong>Null coalescing</strong> — <code>??</code> operator vs <code>or</code> keyword</li>
+      <li><strong>Stdlib import style</strong> — explicit <code>use</code> / always global / configurable</li>
+    </ol>
+  </div>
+
+  <h3 class="doc-h3">Language Name Candidates — Urdu</h3>
+
+  <h4 class="doc-h4">Speed &amp; Power</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Urdu</th><th>Meaning</th><th>Extension</th><th>CLI example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Barq</strong></td><td>برق</td><td>Lightning / Electricity</td><td><code>.bq</code></td><td><code>barq run app.bq</code></td></tr>
+        <tr><td><strong>Teez</strong></td><td>تیز</td><td>Fast / Sharp</td><td><code>.tz</code></td><td><code>teez run app.tz</code></td></tr>
+        <tr><td><strong>Raftar</strong></td><td>رفتار</td><td>Speed / Pace</td><td><code>.rft</code></td><td><code>raftar run app.rft</code></td></tr>
+        <tr><td><strong>Zor</strong></td><td>زور</td><td>Force / Power</td><td><code>.zr</code></td><td><code>zor run app.zr</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="doc-h4">Light &amp; Clarity</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Urdu</th><th>Meaning</th><th>Extension</th><th>CLI example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Noor</strong></td><td>نور</td><td>Light / Radiance</td><td><code>.nr</code></td><td><code>noor run app.nr</code></td></tr>
+        <tr><td><strong>Roshan</strong></td><td>روشن</td><td>Bright / Illuminated</td><td><code>.rsh</code></td><td><code>roshan run app.rsh</code></td></tr>
+        <tr><td><strong>Kiran</strong></td><td>کرن</td><td>Ray of Light</td><td><code>.krn</code></td><td><code>kiran run app.krn</code></td></tr>
+        <tr><td><strong>Mehr</strong></td><td>مہر</td><td>Sun / Warmth</td><td><code>.mhr</code></td><td><code>mehr run app.mhr</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="doc-h4">Mind &amp; Intelligence</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Urdu</th><th>Meaning</th><th>Extension</th><th>CLI example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Zehn</strong></td><td>ذہن</td><td>Mind / Intellect</td><td><code>.zhn</code></td><td><code>zehn run app.zhn</code></td></tr>
+        <tr><td><strong>Soch</strong></td><td>سوچ</td><td>Thought / Think</td><td><code>.sch</code></td><td><code>soch run app.sch</code></td></tr>
+        <tr><td><strong>Aql</strong></td><td>عقل</td><td>Wisdom / Reason</td><td><code>.aql</code></td><td><code>aql run app.aql</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="doc-h4">Flow &amp; Order</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Urdu</th><th>Meaning</th><th>Extension</th><th>CLI example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Rawan</strong></td><td>رواں</td><td>Flowing / Fluent</td><td><code>.rwn</code></td><td><code>rawan run app.rwn</code></td></tr>
+        <tr><td><strong>Nizam</strong></td><td>نظام</td><td>System / Order</td><td><code>.nzm</code></td><td><code>nizam run app.nzm</code></td></tr>
+        <tr><td><strong>Tarteeb</strong></td><td>ترتیب</td><td>Arrangement / Structure</td><td><code>.trt</code></td><td><code>tarteeb run app.trt</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout info">
+    <span class="c-icon">💡</span>
+    <div class="c-body">
+      <strong>How the name ripples through everything</strong>
+      <p>If name = <strong>Barq</strong>: CLI is <code>barq</code>, stdlib is <code>Barq\Http\Request</code>, extension is <code>.bq</code>, manifest is <code>barq.pkg</code>, framework is <em>Barq Framework</em></p>
+    </div>
+  </div>
+
+  <h3 class="doc-h3">All Decisions</h3>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:14px">
+    <ul class="dec-list">
+      <li class="dec-item"><span class="d-num">#1</span><div><div class="d-title">Language name (Urdu)</div><div class="d-opts">Choose from Urdu — will determine file extension</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#2</span><div><div class="d-title">File extension</div><div class="d-opts">Derived from final name</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#3</span><div><div class="d-title">CLI tool name</div><div class="d-opts"><code>barq</code> / final-name / other</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#4</span><div><div class="d-title">Framework name</div><div class="d-opts">Your choice</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#5</span><div><div class="d-title">String interpolation</div><div class="d-opts">✅ <code>"Hello {name}"</code> — curly brace inside string</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#6</span><div><div class="d-title">Collection syntax</div><div class="d-opts">✅ Option C — <code>#[]</code> list · <code>#{}</code> dict · <code>#()</code> set</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#7</span><div><div class="d-title">Null safety operator</div><div class="d-opts"><code>?.</code> operator · explicit checks only</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#8</span><div><div class="d-title">Type casting</div><div class="d-opts">✅ <code>~int(x)</code> tilde cast — unique Barq syntax</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#9</span><div><div class="d-title">Function keyword</div><div class="d-opts">✅ <code>karo sum(int a, int b)</code> (named) · <code>karo(...)</code> (anonymous) · <code>kr(...) =&gt;</code> (lambda)</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#9b</span><div><div class="d-title">Visibility + return type</div><div class="d-opts">✅ <code>#[Public]</code> · <code>#[Private]</code> · <code>#[int]</code> · <code>#[void]</code> attributes</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#10</span><div><div class="d-title">Default parameters</div><div class="d-opts">Supported / not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#11</span><div><div class="d-title">Anonymous &amp; lambda functions</div><div class="d-opts">✅ Anonymous <code>karo(params): type</code> + indented body · lambda <code>kr(int x): int =&gt; x * 2</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#12</span><div><div class="d-title">Error handling syntax</div><div class="d-opts">✅ <code>try/except</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#13</span><div><div class="d-title">Switch / case</div><div class="d-opts">✅ <code>switch/case</code> (PHP style)</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#14</span><div><div class="d-title">Ternary expression</div><div class="d-opts">✅ Both — <code>cond ? a : b</code> and <code>a if cond else b</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#15</span><div><div class="d-title">Null coalescing</div><div class="d-opts"><code>??</code> · <code>or</code> · not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#16</span><div><div class="d-title">Static class members</div><div class="d-opts">Supported with <code>static</code> · not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#17</span><div><div class="d-title">Abstract classes</div><div class="d-opts">✅ Supported — <code>abstract class</code> + <code>#[Abstract]</code> on methods</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#18</span><div><div class="d-title">Interfaces</div><div class="d-opts">Supported · not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#19</span><div><div class="d-title">Traits</div><div class="d-opts">Supported · not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#20</span><div><div class="d-title">Namespace separator</div><div class="d-opts">✅ Backslash <code>\</code> — e.g. <code>App\Models\User</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#21</span><div><div class="d-title">Import aliasing</div><div class="d-opts">✅ Supported — <code>use App\Models\User as AppUser</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#22</span><div><div class="d-title">Grouped imports</div><div class="d-opts">✅ Supported — <code>use App\Models\{User, Post, Comment}</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#23</span><div><div class="d-title">Stdlib namespace prefix</div><div class="d-opts"><code>Barq\</code> · final-name prefix · no prefix</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#24</span><div><div class="d-title">Project config file name</div><div class="d-opts"><code>barq.config</code> · <code>project.bq</code> · <code>.bqconfig</code></div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#25</span><div><div class="d-title">Cache backend</div><div class="d-opts">In-memory only · file · Redis · configurable</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#26</span><div><div class="d-title">DB config location</div><div class="d-opts">✅ Both — <code>.env</code> credentials + <code>config/database.bq</code> structure</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#27</span><div><div class="d-title">SQL vs NoSQL API</div><div class="d-opts">Separate <code>table()</code>/<code>collection()</code> · unified</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#28</span><div><div class="d-title">Template model</div><div class="d-opts">✅ HTML-tag style: <code>&lt;each&gt;</code> · <code>&lt;if&gt;</code> · <code>{variable}</code></div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#29</span><div><div class="d-title">Template file extension</div><div class="d-opts"><code>.bq</code> · <code>.html.bq</code> · <code>.bq.html</code></div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#30</span><div><div class="d-title">Route parameter syntax</div><div class="d-opts"><code>{id}</code> · <code>:id</code> · <code>&lt;id&gt;</code></div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#31</span><div><div class="d-title">Model auto-table naming</div><div class="d-opts">Plural lowercase (User → users) · explicit only</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#32</span><div><div class="d-title">Version numbering scheme</div><div class="d-opts">✅ SemVer — <code>1.0.0</code> (Major.Minor.Patch)</div></div><span class="d-status done">Done</span></li>
+      <li class="dec-item"><span class="d-num">#33</span><div><div class="d-title">VM implementation language</div><div class="d-opts">Python (reference) → then Rust / C / Go</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#34</span><div><div class="d-title">Async / concurrency model</div><div class="d-opts">async/await · coroutines · threads · not in v1</div></div><span class="d-status pending">Pending</span></li>
+      <li class="dec-item"><span class="d-num">#35</span><div><div class="d-title">Package registry</div><div class="d-opts">Self-hosted · GitHub-based · CLI-integrated</div></div><span class="d-status pending">Pending</span></li>
+    </ul>
+  </div>
+
+  <p style="margin-top:24px;font-size:.78rem;color:var(--fg-subtle)">
+    Barq Language Specification — Draft 0.1 · November 2026 · All decisions pending author review.
+  </p>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── theme toggle ──
+const themeToggle = document.getElementById('theme-toggle');
+const iconSun  = themeToggle.querySelector('.icon-sun');
+const iconMoon = themeToggle.querySelector('.icon-moon');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  iconSun.style.display  = theme === 'dark' ? 'none' : '';
+  iconMoon.style.display = theme === 'dark' ? '' : 'none';
+  try { localStorage.setItem('barq-theme', theme); } catch(e) {}
+}
+
+(function() {
+  let saved;
+  try { saved = localStorage.getItem('barq-theme'); } catch(e) {}
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved === 'dark' || saved === 'light' ? saved : (sysDark ? 'dark' : 'light'));
+})();
+
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+});
+
+// ── mobile sidebar ──
+const mobMenuBtn = document.getElementById('mob-menu-btn');
+const mobOverlay = document.getElementById('mob-overlay');
+const sidebar    = document.getElementById('sidebar');
+
+mobMenuBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  mobOverlay.classList.toggle('open');
+});
+mobOverlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  mobOverlay.classList.remove('open');
+});
+sidebar.querySelectorAll('.sb-link').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      sidebar.classList.remove('open');
+      mobOverlay.classList.remove('open');
+    }
+  });
+});
+
+// ── active sidebar on scroll ──
+const sections = document.querySelectorAll('section[id]');
+const sbLinks  = document.querySelectorAll('.sb-link');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sbLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-15% 0px -72% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

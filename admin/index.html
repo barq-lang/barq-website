@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barq Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter','system-ui','sans-serif'],
+        mono: ['JetBrains Mono','monospace'],
+      }
+    }
+  }
+}
+</script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:'Inter',system-ui,sans-serif}
+  body{background:#F4F4F5;color:#09090B}
+
+  /* Sidebar — floating card style */
+  .sidebar{width:210px;background:#fff;display:flex;flex-direction:column;position:fixed;left:10px;top:10px;bottom:10px;z-index:40;border-radius:14px;border:1px solid #E4E4E7;box-shadow:0 2px 12px rgba(0,0,0,.06),0 0 0 0 transparent}
+  .sidebar-logo{padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #E4E4E7;flex-shrink:0;border-radius:14px 14px 0 0}
+  .sidebar-logo-name{font-size:15px;font-weight:800;letter-spacing:-.02em;color:#09090B}
+  .sidebar-logo-badge{font-size:10px;font-weight:700;background:#09090B;color:#fff;padding:2px 7px;border-radius:20px;letter-spacing:.02em}
+  .sidebar-nav{flex:1;display:flex;flex-direction:column;padding:10px 10px;gap:1px;overflow-y:auto}
+  .sidebar-nav a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:#52525B;font-size:13px;font-weight:500;transition:all .15s;cursor:pointer;text-decoration:none;white-space:nowrap}
+  .sidebar-nav a svg{flex-shrink:0;opacity:.7}
+  .sidebar-nav a:hover{background:#F4F4F5;color:#09090B}
+  .sidebar-nav a:hover svg{opacity:1}
+  .sidebar-nav a.active{background:#09090B;color:#fff}
+  .sidebar-nav a.active svg{opacity:1}
+  .sidebar-nav a[data-badge]{position:relative}
+  .sidebar-nav a[data-badge]::after{content:attr(data-badge);position:absolute;right:10px;top:50%;transform:translateY(-50%);min-width:18px;height:18px;border-radius:20px;background:#D97706;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+  .sidebar-divider{height:1px;background:#F4F4F5;margin:8px 10px}
+  .sidebar-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A1A1AA;padding:8px 10px 4px}
+  .sidebar-bottom{padding:12px 10px;border-top:1px solid #E4E4E7}
+
+  /* Main area */
+  .main{margin-left:230px;min-height:100vh;display:flex;flex-direction:column}
+  .topbar{background:#fff;border-bottom:1px solid #E4E4E7;padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:30}
+  .content{flex:1;padding:24px}
+
+  /* Stat cards */
+  .stat-card{background:#fff;border:1px solid #E4E4E7;border-radius:12px;transition:box-shadow .15s}
+  .stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.07)}
+  .stat-pad{padding:20px 24px}
+  .stat-num{font-size:36px;font-weight:700;line-height:1;letter-spacing:-1.5px;font-variant-numeric:tabular-nums;margin:8px 0 6px}
+  .stat-label{font-size:12px;color:#71717A;display:flex;align-items:center;gap:6px;margin-bottom:2px}
+  .badge-up{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;background:#DCFCE7;color:#15803D}
+  .badge-warn{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;background:#FEF3C7;color:#92400E}
+  .badge-err{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;background:#FEE2E2;color:#991B1B}
+
+  /* Pills date range */
+  .pill-group{display:flex;background:#F4F4F5;border:1px solid #E4E4E7;border-radius:8px;padding:3px;gap:2px}
+  .pill{font-size:12px;font-weight:500;padding:4px 12px;border-radius:6px;cursor:pointer;color:#71717A;transition:all .15s;user-select:none;white-space:nowrap}
+  .pill.active{background:#fff;color:#09090B;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+
+  /* Action items */
+  .action-item{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;transition:background .15s;border-bottom:1px solid #F4F4F5}
+  .action-item:last-child{border-bottom:none}
+  .action-item:hover{background:#FAFAFA}
+  .action-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .action-count{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{font-size:11px;font-weight:600;color:#71717A;text-transform:uppercase;letter-spacing:.05em;padding:10px 16px;text-align:left;border-bottom:1px solid #E4E4E7;background:#FAFAFA;white-space:nowrap}
+  .tbl td{padding:12px 16px;font-size:13px;border-bottom:1px solid #F4F4F5;vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover td{background:#FAFAFA}
+  .role-pill{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+
+  /* Health metrics */
+  .metric-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #F4F4F5}
+  .metric-row:last-child{border-bottom:none}
+
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#D4D4D8;border-radius:10px}
+
+  @media(max-width:1100px){
+    .stats-grid{grid-template-columns:1fr 1fr 1fr!important}
+    .attention-panel{display:none!important}
+    .chart-grid{grid-template-columns:1fr!important}
+  }
+  @media(max-width:768px){
+    .sidebar{display:none}
+    .main{margin-left:0!important}
+    .hide-sm{display:none!important}
+    .stats-grid{grid-template-columns:1fr 1fr!important}
+  }
+  @media(max-width:500px){
+    .stats-grid{grid-template-columns:1fr!important}
+    .content{padding:16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+      <defs><linearGradient id="slg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#228B22"/><stop offset="100%" stop-color="#3434e6"/></linearGradient></defs>
+      <path d="M15 2L4 15h9l-2 9 13-13h-9l2-9z" fill="url(#slg)"/>
+    </svg>
+    <span class="sidebar-logo-name">Barq</span>
+    <span class="sidebar-logo-badge">Admin</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+
+    <a class="active" href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="1.8"/></svg>
+      Overview
+    </a>
+
+    <div class="sidebar-section-label">Manage</div>
+
+    <a href="#" data-badge="4">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.8"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="1.8"/></svg>
+      Users
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.8"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/></svg>
+      Posts
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="1.8"/></svg>
+      Packages
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><line x1="2" y1="12" x2="22" y2="12" stroke-width="1.8"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke-width="1.8"/></svg>
+      Languages
+    </a>
+
+    <div class="sidebar-section-label">System</div>
+
+    <a href="#" data-badge="23">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="1.8"/></svg>
+      Queue
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><line x1="12" y1="8" x2="12" y2="12" stroke-width="1.8"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/></svg>
+      Error Logs
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="1.8"/></svg>
+      Settings
+    </a>
+    <a href="#">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke-width="1.8"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke-width="1.8"/></svg>
+      Audit Log
+    </a>
+
+  </nav>
+
+  <!-- Bottom: user -->
+  <div class="sidebar-bottom">
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .15s" onmouseenter="this.style.background='#F4F4F5'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#228B22,#3434e6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">SA</div>
+      <div style="min-width:0">
+        <div style="font-size:12px;font-weight:600;color:#09090B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Super Admin</div>
+        <div style="font-size:10px;color:#A1A1AA">Admin</div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- Topbar — right-side only (logo lives in sidebar) -->
+  <header class="topbar">
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+
+      <!-- View site -->
+      <a href="#" class="hide-sm" style="font-size:12px;font-weight:500;color:#52525B;border:1px solid #E4E4E7;background:#fff;border-radius:7px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none;transition:border-color .15s" onmouseenter="this.style.borderColor='#A1A1AA'" onmouseleave="this.style.borderColor='#E4E4E7'">
+        View site
+        <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke-width="2"/><polyline points="15,3 21,3 21,9" stroke-width="2"/><line x1="10" y1="14" x2="21" y2="3" stroke-width="2"/></svg>
+      </a>
+
+      <!-- Inbox -->
+      <button class="hide-sm" style="width:34px;height:34px;border-radius:8px;border:1px solid #E4E4E7;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s" onmouseenter="this.style.borderColor='#A1A1AA'" onmouseleave="this.style.borderColor='#E4E4E7'">
+        <svg width="15" height="15" fill="none" stroke="#71717A" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke-width="1.8"/></svg>
+      </button>
+
+      <!-- Notifications -->
+      <button style="width:34px;height:34px;border-radius:8px;border:1px solid #E4E4E7;background:#fff;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .15s" onmouseenter="this.style.borderColor='#A1A1AA'" onmouseleave="this.style.borderColor='#E4E4E7'">
+        <svg width="15" height="15" fill="none" stroke="#71717A" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.8"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.8"/></svg>
+        <span style="position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:#DC2626;border:1.5px solid #fff"></span>
+      </button>
+
+      <!-- User -->
+      <div style="display:flex;align-items:center;gap:8px;border:1px solid #E4E4E7;border-radius:8px;padding:5px 10px 5px 6px;background:#fff;cursor:pointer">
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#228B22,#3434e6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">SA</div>
+        <div class="hide-sm">
+          <div style="font-size:12px;font-weight:600;line-height:1.3;color:#09090B">Super Admin</div>
+          <div style="font-size:10px;color:#A1A1AA;line-height:1">Admin</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- Page heading + date range -->
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h1 style="font-size:24px;font-weight:800;letter-spacing:-.025em;line-height:1.2;color:#09090B">Overview</h1>
+        <p style="font-size:13px;color:#71717A;margin-top:4px">The framework over the last 30 days, from live data.</p>
+      </div>
+      <div class="pill-group hide-sm">
+        <div class="pill" onclick="setPeriod(this)">7 days</div>
+        <div class="pill active" onclick="setPeriod(this)">30 days</div>
+        <div class="pill" onclick="setPeriod(this)">90 days</div>
+        <div class="pill" onclick="setPeriod(this)">12 months</div>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 300px;gap:14px;margin-bottom:16px;align-items:start">
+
+      <!-- Users -->
+      <div class="stat-card stat-pad">
+        <div class="stat-label">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke-width="2"/></svg>
+          Active users
+        </div>
+        <div class="stat-num">1,247</div>
+        <div style="font-size:12px;color:#A1A1AA;line-height:1.6">
+          <span class="badge-up">↑ 12.4%</span>
+          <span style="margin-left:6px">vs previous 30 days</span>
+        </div>
+        <div style="font-size:11px;color:#A1A1AA;margin-top:3px">308 new this period</div>
+      </div>
+
+      <!-- Requests -->
+      <div class="stat-card stat-pad">
+        <div class="stat-label">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="2"/></svg>
+          HTTP requests
+        </div>
+        <div class="stat-num">84.2k</div>
+        <div style="font-size:12px;color:#A1A1AA;line-height:1.6">
+          <span class="badge-up">↑ 30.5%</span>
+          <span style="margin-left:6px">vs previous 30 days</span>
+        </div>
+        <div style="font-size:11px;color:#A1A1AA;margin-top:3px">avg 2,807 / day</div>
+      </div>
+
+      <!-- Queue -->
+      <div class="stat-card stat-pad">
+        <div class="stat-label">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" stroke-width="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke-width="2"/></svg>
+          Queue jobs
+        </div>
+        <div class="stat-num">23</div>
+        <div style="font-size:12px;color:#A1A1AA;line-height:1.6">
+          <span class="badge-warn">⏳ Pending</span>
+          <span style="margin-left:6px">3 failed</span>
+        </div>
+        <div style="font-size:11px;color:#A1A1AA;margin-top:3px">driver: file / sync</div>
+      </div>
+
+      <!-- Needs attention — right panel spans both rows -->
+      <div class="stat-card attention-panel" style="grid-row:span 2;overflow:hidden;padding:0">
+        <div style="padding:16px 20px;border-bottom:1px solid #F4F4F5">
+          <div style="font-size:13px;font-weight:700">Needs attention</div>
+          <div style="font-size:11px;color:#A1A1AA;margin-top:2px">4 items waiting on an admin.</div>
+        </div>
+
+        <div class="action-item">
+          <div class="action-icon" style="background:#EDE9FE"><svg width="14" height="14" fill="none" stroke="#7C3AED" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke-width="2"/></svg></div>
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">Users to review</div><div style="font-size:11px;color:#A1A1AA">2 flagged · oldest 3d ago</div></div>
+          <div class="action-count" style="background:#7C3AED">8</div>
+          <svg width="11" height="11" fill="none" stroke="#A1A1AA" viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6" stroke-width="2"/></svg>
+        </div>
+
+        <div class="action-item">
+          <div class="action-icon" style="background:#FEF3C7"><svg width="14" height="14" fill="none" stroke="#D97706" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="2"/></svg></div>
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">Failed queue jobs</div><div style="font-size:11px;color:#A1A1AA">Retry or discard</div></div>
+          <div class="action-count" style="background:#D97706">3</div>
+          <svg width="11" height="11" fill="none" stroke="#A1A1AA" viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6" stroke-width="2"/></svg>
+        </div>
+
+        <div class="action-item">
+          <div class="action-icon" style="background:#FEE2E2"><svg width="14" height="14" fill="none" stroke="#DC2626" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2.5"/></svg></div>
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">Error log spikes</div><div style="font-size:11px;color:#A1A1AA">Nov 4 — 500 errors</div></div>
+          <div class="action-count" style="background:#DC2626">1</div>
+          <svg width="11" height="11" fill="none" stroke="#A1A1AA" viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6" stroke-width="2"/></svg>
+        </div>
+
+        <div class="action-item" style="border-bottom:none">
+          <div class="action-icon" style="background:#F4F4F5"><svg width="14" height="14" fill="none" stroke="#52525B" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="2"/></svg></div>
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">Package updates</div><div style="font-size:11px;color:#A1A1AA">barq/auth v1.2 available</div></div>
+          <div class="action-count" style="background:#A1A1AA">1</div>
+          <svg width="11" height="11" fill="none" stroke="#A1A1AA" viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6" stroke-width="2"/></svg>
+        </div>
+
+        <div style="padding:12px 20px;border-top:1px solid #F4F4F5">
+          <span style="font-size:11px;color:#A1A1AA">Rejections send users a notification automatically.</span>
+        </div>
+      </div>
+
+      <!-- Cache -->
+      <div class="stat-card stat-pad">
+        <div class="stat-label">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" stroke-width="2"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke-width="2"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke-width="2"/></svg>
+          Cache hit rate
+        </div>
+        <div class="stat-num">98.2%</div>
+        <div style="font-size:12px;color:#A1A1AA;line-height:1.6">
+          <span class="badge-up">↑ 0.4%</span>
+          <span style="margin-left:6px">vs previous 30 days</span>
+        </div>
+        <div style="font-size:11px;color:#A1A1AA;margin-top:3px">1,432 cached keys</div>
+      </div>
+
+    </div>
+
+    <!-- Chart + Health -->
+    <div class="chart-grid" style="display:grid;grid-template-columns:1fr 300px;gap:14px;margin-bottom:16px;align-items:start">
+
+      <!-- Chart -->
+      <div class="stat-card stat-pad">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:13px;font-weight:700">HTTP Requests</div>
+            <div style="font-size:11px;color:#A1A1AA;margin-top:2px">New requests against errors</div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#71717A"><span style="display:inline-block;width:10px;height:3px;background:#7C3AED;border-radius:2px"></span>Requests</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#71717A"><span style="display:inline-block;width:10px;height:3px;background:#D97706;border-radius:2px;border-top:1px dashed #D97706"></span>Errors</div>
+            <a href="#" style="font-size:12px;color:#7C3AED;text-decoration:none;font-weight:500">All requests →</a>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <svg viewBox="0 0 540 160" style="width:100%;min-width:300px;display:block" overflow="visible">
+            <defs>
+              <linearGradient id="vfill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <text x="0" y="17" font-size="10" fill="#D4D4D8" font-family="Inter">12k</text>
+            <text x="0" y="52" font-size="10" fill="#D4D4D8" font-family="Inter">9k</text>
+            <text x="0" y="87" font-size="10" fill="#D4D4D8" font-family="Inter">6k</text>
+            <text x="0" y="122" font-size="10" fill="#D4D4D8" font-family="Inter">3k</text>
+            <line x1="28" y1="15" x2="540" y2="15" stroke="#F4F4F5" stroke-width="1"/>
+            <line x1="28" y1="50" x2="540" y2="50" stroke="#F4F4F5" stroke-width="1"/>
+            <line x1="28" y1="85" x2="540" y2="85" stroke="#F4F4F5" stroke-width="1"/>
+            <line x1="28" y1="120" x2="540" y2="120" stroke="#F4F4F5" stroke-width="1"/>
+            <!-- Requests fill -->
+            <polygon points="40,78 110,42 185,55 255,22 325,36 400,20 480,32 540,28 540,120 40,120" fill="url(#vfill)"/>
+            <!-- Requests line -->
+            <polyline points="40,78 110,42 185,55 255,22 325,36 400,20 480,32 540,28" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- Errors line dashed -->
+            <polyline points="40,116 110,110 185,118 255,105 325,112 400,108 480,113 540,110" fill="none" stroke="#D97706" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5,3"/>
+            <!-- Peaks -->
+            <circle cx="255" cy="22" r="4" fill="#7C3AED" stroke="white" stroke-width="2"/>
+            <circle cx="400" cy="20" r="4" fill="#7C3AED" stroke="white" stroke-width="2"/>
+            <!-- Peak tooltip -->
+            <rect x="232" y="4" width="54" height="18" rx="5" fill="#7C3AED"/>
+            <text x="259" y="16" font-size="10" fill="white" text-anchor="middle" font-family="Inter" font-weight="600">11.8k</text>
+            <!-- X labels -->
+            <text x="40" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Mon</text>
+            <text x="110" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Tue</text>
+            <text x="185" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Wed</text>
+            <text x="255" y="142" font-size="10" fill="#7C3AED" text-anchor="middle" font-family="Inter" font-weight="600">Thu</text>
+            <text x="325" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Fri</text>
+            <text x="400" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Sat</text>
+            <text x="480" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Sun</text>
+            <text x="540" y="142" font-size="10" fill="#A1A1AA" text-anchor="middle" font-family="Inter">Today</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Health -->
+      <div class="stat-card" style="overflow:hidden;padding:0">
+        <div style="padding:16px 20px;border-bottom:1px solid #F4F4F5">
+          <div style="font-size:13px;font-weight:700">Framework health</div>
+          <div style="font-size:11px;color:#A1A1AA;margin-top:2px">Compared with the previous 30 days</div>
+        </div>
+        <div style="padding:0 20px">
+          <div class="metric-row">
+            <div><div style="font-size:12px;font-weight:500">Avg response time</div><div style="font-size:11px;color:#A1A1AA">p95: 128ms</div></div>
+            <div style="text-align:right"><div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">42ms</div><div style="font-size:10px;color:#15803D">No change</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div style="font-size:12px;font-weight:500">DB query time</div><div style="font-size:11px;color:#A1A1AA">pool: 4 / 20</div></div>
+            <div style="text-align:right"><div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">8ms</div><div style="font-size:10px;color:#15803D">↓ Faster</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div style="font-size:12px;font-weight:500">Auth success rate</div><div style="font-size:11px;color:#A1A1AA">2FA: 38%</div></div>
+            <div style="text-align:right"><div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">99.1%</div><div style="font-size:10px;color:#A1A1AA">No change</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div style="font-size:12px;font-weight:500">Mail delivery</div><div style="font-size:11px;color:#A1A1AA">driver: smtp</div></div>
+            <div style="text-align:right"><div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">97.8%</div><div style="font-size:10px;color:#D97706">↓ Slight drop</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div style="font-size:12px;font-weight:500">Uptime this month</div><div style="font-size:11px;color:#A1A1AA">1 incident</div></div>
+            <div style="text-align:right"><div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">99.97%</div><div style="font-size:10px;color:#15803D">On track</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="stat-card" style="overflow:hidden;padding:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #F4F4F5;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:13px;font-weight:700">Users</div>
+          <div style="font-size:11px;color:#A1A1AA;margin-top:2px">New users against active sessions</div>
+        </div>
+        <a href="#" style="font-size:12px;font-weight:500;color:#7C3AED;text-decoration:none">All users →</a>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th class="hide-sm">Role</th>
+              <th class="hide-sm">Joined</th>
+              <th>Status</th>
+              <th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A855F7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">AK</div><div><div style="font-size:12px;font-weight:600">Ali Khan</div><div style="font-size:11px;color:#A1A1AA">ali@example.com</div></div></div></td>
+              <td class="hide-sm"><span class="role-pill" style="background:#EDE9FE;color:#6D28D9">admin</span></td>
+              <td class="hide-sm"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#71717A">2026-10-01</span></td>
+              <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#16A34A;margin-right:5px;vertical-align:middle"></span><span style="font-size:12px">Active</span></td>
+              <td style="text-align:right"><button style="font-size:11px;color:#71717A;border:none;background:none;cursor:pointer;margin-right:8px">Edit</button><button style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Remove</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#0EA5E9,#38BDF8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">SA</div><div><div style="font-size:12px;font-weight:600">Sara Ahmed</div><div style="font-size:11px;color:#A1A1AA">sara@example.com</div></div></div></td>
+              <td class="hide-sm"><span class="role-pill" style="background:#DBEAFE;color:#1D4ED8">editor</span></td>
+              <td class="hide-sm"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#71717A">2026-09-15</span></td>
+              <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#16A34A;margin-right:5px;vertical-align:middle"></span><span style="font-size:12px">Active</span></td>
+              <td style="text-align:right"><button style="font-size:11px;color:#71717A;border:none;background:none;cursor:pointer;margin-right:8px">Edit</button><button style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Remove</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#FBBF24);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">MR</div><div><div style="font-size:12px;font-weight:600">Mohammad Raza</div><div style="font-size:11px;color:#A1A1AA">raza@example.com</div></div></div></td>
+              <td class="hide-sm"><span class="role-pill" style="background:#F4F4F5;color:#52525B">member</span></td>
+              <td class="hide-sm"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#71717A">2026-11-01</span></td>
+              <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#16A34A;margin-right:5px;vertical-align:middle"></span><span style="font-size:12px">Active</span></td>
+              <td style="text-align:right"><button style="font-size:11px;color:#71717A;border:none;background:none;cursor:pointer;margin-right:8px">Edit</button><button style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Remove</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:#F4F4F5;border:1px solid #E4E4E7;display:flex;align-items:center;justify-content:center;color:#71717A;font-size:10px;font-weight:700;flex-shrink:0">FQ</div><div><div style="font-size:12px;font-weight:600">Fatima Qureshi</div><div style="font-size:11px;color:#A1A1AA">fatima@example.com</div></div></div></td>
+              <td class="hide-sm"><span class="role-pill" style="background:#F4F4F5;color:#52525B">member</span></td>
+              <td class="hide-sm"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#71717A">2026-11-04</span></td>
+              <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D97706;margin-right:5px;vertical-align:middle"></span><span style="font-size:12px">Pending</span></td>
+              <td style="text-align:right"><button style="font-size:11px;color:#71717A;border:none;background:none;cursor:pointer;margin-right:8px">Edit</button><button style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Remove</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:#FEE2E2;border:1px solid #FECACA;display:flex;align-items:center;justify-content:center;color:#DC2626;font-size:10px;font-weight:700;flex-shrink:0">ZB</div><div><div style="font-size:12px;font-weight:600">Zain Baig</div><div style="font-size:11px;color:#A1A1AA">zain@example.com</div></div></div></td>
+              <td class="hide-sm"><span class="role-pill" style="background:#F4F4F5;color:#52525B">member</span></td>
+              <td class="hide-sm"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#71717A">2026-08-20</span></td>
+              <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#DC2626;margin-right:5px;vertical-align:middle"></span><span style="font-size:12px">Banned</span></td>
+              <td style="text-align:right"><button style="font-size:11px;color:#71717A;border:none;background:none;cursor:pointer;margin-right:8px">Edit</button><button style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid #F4F4F5;flex-wrap:wrap;gap:8px">
+        <span style="font-size:11px;color:#A1A1AA">Showing 1–5 of 1,247 users</span>
+        <div style="display:flex;gap:3px">
+          <button style="width:28px;height:28px;border-radius:6px;border:1px solid #E4E4E7;background:#fff;font-size:12px;cursor:pointer;color:#71717A">‹</button>
+          <button style="width:28px;height:28px;border-radius:6px;border:none;background:#09090B;color:#fff;font-size:12px;cursor:pointer;font-weight:600">1</button>
+          <button style="width:28px;height:28px;border-radius:6px;border:1px solid #E4E4E7;background:#fff;font-size:12px;cursor:pointer;color:#71717A">2</button>
+          <button style="width:28px;height:28px;border-radius:6px;border:1px solid #E4E4E7;background:#fff;font-size:12px;cursor:pointer;color:#71717A">3</button>
+          <button style="width:28px;height:28px;border-radius:6px;border:1px solid #E4E4E7;background:#fff;font-size:12px;cursor:pointer;color:#71717A">›</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', function() {
+    document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+function setPeriod(el) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

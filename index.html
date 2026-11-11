@@ -1,0 +1,1358 @@
+<title>Barq</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   Barq official website  —  light-first marketing page
+   Primary #228B22 (Forest Green) · Secondary #3434e6 (Royal Blue)
+   Layout: fixed nav → hero (2-col) → stats strip → feature grid
+           → code showcase → install CTA → footer
+   ═══════════════════════════════════════════════════════════════ */
+
+/* --- tokens — redesigned palette, full light/dark support --- */
+:root {
+  /* backgrounds */
+  --bg:          #FAFAFA;
+  --bg-nav:      rgba(250,250,250,.97);
+  --bg-card:     #FFFFFF;
+  --bg-code:     #F3F4F6;
+  --bg-elevated: #F9FAFB;
+  --bg-btn-ghost:rgba(0,0,0,.04);
+
+  /* borders */
+  --border:      #E5E7EB;
+  --border-mid:  #D1D5DB;
+  --border-hi:   #9CA3AF;
+
+  /* text */
+  --fg:          #111827;
+  --fg-muted:    #6B7280;
+  --fg-subtle:   #9CA3AF;
+
+  /* brand */
+  --green:       #15803D;
+  --green-hi:    #166534;
+  --blue:        #4F46E5;
+  --blue-hi:     #4338CA;
+
+  --grad:        linear-gradient(135deg,#15803D 0%,#4F46E5 100%);
+  --grad-soft:   linear-gradient(135deg,rgba(21,128,61,.07) 0%,rgba(79,70,229,.07) 100%);
+
+  /* syntax (light — One Light inspired) */
+  --syn-kw:  #7C3AED;
+  --syn-fn:  #15803D;
+  --syn-ty:  #0369A1;
+  --syn-st:  #B45309;
+  --syn-cm:  #9CA3AF;
+  --syn-at:  #C026D3;
+  --syn-ns:  #0E7490;
+  --syn-nm:  #EA580C;
+  --syn-op:  #6B7280;
+  --syn-pu:  #374151;
+
+  --f-display:   'Sora', system-ui, sans-serif;
+  --f-body:      'Inter', system-ui, sans-serif;
+  --f-mono:      'JetBrains Mono','Fira Code',monospace;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #0D1117;
+    --bg-nav:      rgba(13,17,23,.96);
+    --bg-card:     #161B22;
+    --bg-code:     #0D1117;
+    --bg-elevated: #21262D;
+    --bg-btn-ghost:rgba(255,255,255,.07);
+    --border:      #30363D;
+    --border-mid:  #3D444D;
+    --border-hi:   #6E7681;
+    --fg:          #E6EDF3;
+    --fg-muted:    #8B949E;
+    --fg-subtle:   #6E7681;
+    --green:       #3FB950;
+    --green-hi:    #56D364;
+    --blue:        #818CF8;
+    --blue-hi:     #6E76F7;
+    --grad:        linear-gradient(135deg,#3FB950 0%,#818CF8 100%);
+    --grad-soft:   linear-gradient(135deg,rgba(63,185,80,.14) 0%,rgba(129,140,248,.14) 100%);
+    --syn-kw:  #FF7B72;
+    --syn-fn:  #79C0FF;
+    --syn-ty:  #FFA657;
+    --syn-st:  #A5D6FF;
+    --syn-cm:  #8B949E;
+    --syn-at:  #F778BA;
+    --syn-ns:  #D2A8FF;
+    --syn-nm:  #FFA657;
+    --syn-op:  #6E7681;
+    --syn-pu:  #C9D1D9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:          #0D1117;
+  --bg-nav:      rgba(13,17,23,.96);
+  --bg-card:     #161B22;
+  --bg-code:     #0D1117;
+  --bg-elevated: #21262D;
+  --bg-btn-ghost:rgba(255,255,255,.07);
+  --border:      #30363D;
+  --border-mid:  #3D444D;
+  --border-hi:   #6E7681;
+  --fg:          #E6EDF3;
+  --fg-muted:    #8B949E;
+  --fg-subtle:   #6E7681;
+  --green:       #3FB950;
+  --green-hi:    #56D364;
+  --blue:        #818CF8;
+  --blue-hi:     #6E76F7;
+  --grad:        linear-gradient(135deg,#3FB950 0%,#818CF8 100%);
+  --grad-soft:   linear-gradient(135deg,rgba(63,185,80,.14) 0%,rgba(129,140,248,.14) 100%);
+  --syn-kw:  #FF7B72;
+  --syn-fn:  #79C0FF;
+  --syn-ty:  #FFA657;
+  --syn-st:  #A5D6FF;
+  --syn-cm:  #8B949E;
+  --syn-at:  #F778BA;
+  --syn-ns:  #D2A8FF;
+  --syn-nm:  #FFA657;
+  --syn-op:  #6E7681;
+  --syn-pu:  #C9D1D9;
+  color-scheme: dark;
+}
+
+/* --- reset & base --- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--f-body);
+  background:var(--bg);
+  color:var(--fg);
+  overflow-x:hidden;
+  font-size:15px;
+  line-height:1.7;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+[min-width\:0]{min-width:0}
+
+.container{
+  width:100%;
+  padding-left:max(48px,env(safe-area-inset-left,0px));
+  padding-right:max(48px,env(safe-area-inset-right,0px));
+}
+.nav-pill{max-width:none}
+
+/* grad text utility */
+.grad-text{
+  background:var(--grad);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ══ NAVBAR ══════════════════════════════════════════ */
+.nav{
+  position:fixed;
+  top:env(safe-area-inset-top,0px);
+  left:max(8px,env(safe-area-inset-left,0px));
+  right:max(8px,env(safe-area-inset-right,0px));
+  z-index:200;
+  margin-top:8px;
+}
+/* Floating pill — adapts to light/dark mode */
+.nav-pill{
+  background:var(--bg-nav);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  max-width:none;
+}
+.nav-row{
+  display:flex;align-items:center;
+  height:54px;gap:0;
+  padding:0 20px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--f-display);font-weight:800;font-size:1.18rem;
+  color:var(--fg);
+  flex-shrink:0;letter-spacing:-.01em;
+}
+.nav-logo-urdu{font-size:.8rem;color:var(--fg-subtle);font-family:var(--f-body);font-weight:400}
+
+/* dropdown nav items */
+.nav-links{display:flex;align-items:center;gap:0;margin-left:20px}
+.nav-item{position:relative}
+.nav-item-btn{
+  display:flex;align-items:center;gap:4px;
+  font-size:.84rem;color:var(--fg-muted);
+  padding:6px 12px;border-radius:7px;
+  background:none;border:none;cursor:pointer;
+  font-family:var(--f-body);font-weight:500;
+  transition:color .18s,background .18s;white-space:nowrap;
+}
+.nav-item-btn:hover,.nav-item:hover .nav-item-btn{color:var(--fg);background:var(--bg-elevated)}
+.nav-item-btn svg{transition:transform .18s;flex-shrink:0;color:var(--fg-subtle)}
+.nav-item:hover .nav-item-btn svg{transform:rotate(180deg)}
+.nav-plain{
+  font-size:.84rem;color:var(--fg-muted);
+  padding:6px 12px;border-radius:7px;
+  font-weight:500;transition:color .18s,background .18s;
+}
+.nav-plain:hover{color:var(--fg);background:var(--bg-elevated)}
+
+/* mega dropdown */
+.mega-menu{
+  display:none;
+  position:absolute;top:calc(100% + 8px);left:0;transform:none;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  padding:20px;
+  gap:4px;
+  min-width:560px;
+  z-index:300;
+}
+.nav-item:hover .mega-menu{display:grid}
+.mega-cols-2{grid-template-columns:1fr 1fr}
+.mega-cols-3{grid-template-columns:1fr 1fr 1fr}
+.mega-cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.mega-section{padding:0}
+.mega-section-label{
+  font-size:.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--fg-subtle);
+  padding:4px 10px 8px;
+}
+.mega-link{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 10px;border-radius:9px;
+  transition:background .15s;
+  color:var(--fg);cursor:pointer;
+}
+.mega-link:hover{background:var(--bg-elevated)}
+.mega-link-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.mega-link-icon.green{background:rgba(21,128,61,.1);border-color:rgba(21,128,61,.22)}
+.mega-link-icon.blue{background:rgba(79,70,229,.1);border-color:rgba(79,70,229,.22)}
+.mega-link-icon.amber{background:rgba(217,119,6,.1);border-color:rgba(217,119,6,.2)}
+.mega-link-title{font-size:.82rem;font-weight:600;color:var(--fg);line-height:1.3}
+.mega-link-desc{font-size:.74rem;color:var(--fg-muted);line-height:1.45;margin-top:2px}
+.mega-divider{width:1px;background:var(--border);margin:4px 0}
+.mega-view-all{
+  display:flex;align-items:center;gap:6px;
+  font-size:.77rem;color:var(--green);font-weight:600;
+  padding:8px 10px;margin-top:4px;
+  border-top:1px solid var(--border);
+}
+
+/* simple dropdown */
+.mini-menu{
+  display:none;
+  position:absolute;top:calc(100% + 8px);left:0;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:11px;
+  box-shadow:0 8px 24px rgba(0,0,0,.1);
+  padding:6px;
+  min-width:160px;
+  z-index:300;
+}
+.nav-item:hover .mini-menu{display:block}
+.mini-link{
+  display:block;padding:8px 12px;border-radius:7px;
+  font-size:.83rem;color:var(--fg-muted);
+  transition:background .15s,color .15s;
+}
+.mini-link:hover{background:var(--bg-elevated);color:var(--fg)}
+
+/* right side */
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-search{
+  display:flex;align-items:center;gap:7px;
+  color:var(--fg-muted);padding:6px 12px;border-radius:8px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  font-size:.82rem;cursor:pointer;transition:color .18s,border-color .18s;
+  font-family:var(--f-body);
+}
+.nav-search:hover{color:var(--fg);border-color:var(--border-hi)}
+.nav-search-kbd{
+  font-family:var(--f-mono);font-size:.68rem;
+  background:var(--bg-code);border:1px solid var(--border);
+  padding:1px 5px;border-radius:4px;color:var(--fg-subtle);
+}
+.nav-gh{
+  display:flex;align-items:center;gap:5px;
+  color:var(--fg-muted);padding:6px 11px;border-radius:8px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  font-size:.82rem;transition:color .18s,border-color .18s;
+}
+.nav-gh:hover{color:var(--fg);border-color:var(--border-hi)}
+.nav-gh-stars{
+  font-family:var(--f-mono);font-size:.72rem;
+  background:rgba(21,128,61,.1);border:1px solid rgba(21,128,61,.2);
+  padding:1px 6px;border-radius:20px;color:var(--green);
+}
+.nav-theme-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:8px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  color:var(--fg-muted);cursor:pointer;
+  transition:color .18s,border-color .18s,background .18s;
+  flex-shrink:0;
+}
+.nav-theme-toggle:hover{color:var(--fg);border-color:var(--border-hi)}
+.btn-nav-cta{
+  font-family:var(--f-body);font-size:.84rem;font-weight:600;
+  padding:7px 17px;border-radius:8px;border:none;cursor:pointer;
+  background:var(--grad);color:#fff;
+  transition:opacity .18s,transform .15s;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.btn-nav-cta:hover{opacity:.88;transform:translateY(-1px)}
+.nav-burger{
+  display:none;flex-direction:column;gap:5px;
+  cursor:pointer;padding:4px;background:none;border:none;
+}
+.nav-burger span{display:block;width:21px;height:2px;background:var(--fg-muted);border-radius:2px;transition:.25s}
+
+/* mobile nav */
+.mob-nav{
+  display:none;flex-direction:column;
+  position:fixed;
+  top:calc(74px + env(safe-area-inset-top,0px));
+  left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));
+  background:var(--bg-card);
+  border:1px solid var(--border);border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,.1);
+  padding:10px 16px;
+  z-index:199;
+}
+.mob-nav.open{display:flex}
+.mob-nav a{padding:11px 0;color:var(--fg-muted);border-bottom:1px solid var(--border);font-size:.95rem}
+.mob-nav a:last-child{border-bottom:none}
+
+/* ══ HERO ════════════════════════════════════════════ */
+.hero{
+  padding-top:calc(env(safe-area-inset-top,0px) + 110px);
+  padding-bottom:100px;
+  position:relative;overflow:hidden;
+}
+/* glow orbs */
+.hero-glow-g{
+  position:absolute;width:580px;height:580px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,139,34,.12) 0%,transparent 68%);
+  top:0;left:-80px;pointer-events:none;
+}
+.hero-glow-b{
+  position:absolute;width:480px;height:480px;border-radius:50%;
+  background:radial-gradient(circle,rgba(52,52,230,.1) 0%,transparent 68%);
+  top:60px;right:-40px;pointer-events:none;
+}
+.hero-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;
+  position:relative;z-index:1;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:.74rem;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--green-hi);margin-bottom:22px;
+}
+.hero-eyebrow::before{
+  content:'';display:inline-block;
+  width:22px;height:2px;
+  background:var(--grad);border-radius:2px;
+}
+.hero-h1{
+  font-family:var(--f-display);
+  font-size:clamp(2.3rem,4.8vw,3.7rem);
+  font-weight:800;line-height:1.1;
+  letter-spacing:-.03em;text-wrap:balance;
+  margin-bottom:22px;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--fg-muted);
+  max-width:460px;margin-bottom:34px;line-height:1.78;
+}
+.hero-ctas{display:flex;gap:13px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--f-body);font-size:.95rem;font-weight:600;
+  padding:13px 28px;border-radius:10px;border:none;cursor:pointer;
+  background:var(--grad);color:#fff;
+  transition:opacity .18s,transform .15s;
+}
+.btn-primary:hover{opacity:.87;transform:translateY(-2px)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--f-body);font-size:.95rem;font-weight:500;
+  padding:13px 28px;border-radius:10px;cursor:pointer;
+  background:var(--bg-btn-ghost);border:1px solid var(--border-mid);
+  color:var(--fg-muted);transition:color .18s,border-color .18s,background .18s;
+}
+.btn-ghost:hover{color:var(--fg);border-color:var(--border-hi);background:var(--bg-elevated)}
+.hero-urdu-note{
+  font-size:.85rem;color:var(--fg-subtle);margin-top:18px;
+  font-style:italic;
+}
+
+/* code card */
+.code-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-mid);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06);
+}
+.code-card-bar{
+  display:flex;align-items:center;gap:7px;
+  padding:13px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-elevated);
+}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#FF5F57}.dot-y{background:#FEBC2E}.dot-g{background:#28CA42}
+.code-card-name{
+  font-family:var(--f-mono);font-size:.75rem;
+  color:var(--fg-muted);margin-left:6px;
+}
+.code-card pre{
+  padding:22px 24px;
+  font-family:var(--f-mono);font-size:.8rem;line-height:1.78;
+  overflow-x:auto;background:var(--bg-code);
+  min-width:0;
+}
+
+/* syntax tokens — theme-aware via CSS variables */
+.kw { color: var(--syn-kw); }
+.fn { color: var(--syn-fn); }
+.ty { color: var(--syn-ty); }
+.st { color: var(--syn-st); }
+.cm { color: var(--syn-cm); font-style:italic; }
+.at { color: var(--syn-at); }
+.ns { color: var(--syn-ns); }
+.nm { color: var(--syn-nm); }
+.op { color: var(--syn-op); }
+.pu { color: var(--syn-pu); }
+
+/* ══ STATS ═══════════════════════════════════════════ */
+.stats{
+  background:var(--bg-card);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding-block:36px;
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:16px;text-align:center;
+}
+.stat-num{
+  display:block;
+  font-family:var(--f-display);font-size:2.1rem;font-weight:800;
+  background:var(--grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-variant-numeric:tabular-nums;line-height:1.15;
+}
+.stat-label{
+  font-size:.74rem;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--fg-muted);margin-top:5px;
+  display:block;
+}
+
+/* ══ FEATURES ════════════════════════════════════════ */
+.features{padding-block:100px}
+.section-eyebrow{
+  font-size:.74rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--green-hi);margin-bottom:12px;
+}
+.section-title{
+  font-family:var(--f-display);
+  font-size:clamp(1.75rem,3.2vw,2.5rem);
+  font-weight:800;letter-spacing:-.022em;
+  text-wrap:balance;margin-bottom:14px;
+}
+.section-sub{
+  font-size:.975rem;color:var(--fg-muted);
+  max-width:520px;margin-bottom:56px;line-height:1.75;
+}
+.feat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+/* code-preview cards */
+.feat-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  transition:border-color .24s,transform .24s,box-shadow .24s;
+  display:flex;flex-direction:column;
+}
+.feat-card:hover{
+  border-color:var(--border-mid);
+  transform:translateY(-4px);
+  box-shadow:0 14px 44px rgba(0,0,0,.18),0 0 24px rgba(34,139,34,.07);
+}
+.feat-card-header{
+  padding:18px 20px 14px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+}
+.feat-card-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green-hi);opacity:.5;
+  flex-shrink:0;
+}
+.feat-title{
+  font-family:var(--f-display);font-size:.88rem;font-weight:700;
+  letter-spacing:-.01em;
+}
+.feat-label{
+  margin-left:auto;font-family:var(--f-mono);font-size:.66rem;
+  color:var(--fg-muted);opacity:.6;
+}
+.feat-code{
+  flex:1;padding:14px 16px;
+  font-family:var(--f-mono);font-size:.74rem;line-height:1.72;
+  overflow:hidden;min-width:0;
+  background:var(--bg-code);
+}
+.feat-footer{
+  padding:12px 20px;
+  border-top:1px solid var(--border);
+  font-size:.78rem;color:var(--fg-muted);line-height:1.55;
+}
+
+/* ══ SHOWCASE ════════════════════════════════════════ */
+.showcase{
+  background:var(--bg-card);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding-block:100px;
+}
+.showcase-inner{
+  display:grid;grid-template-columns:1fr 1.35fr;
+  gap:72px;align-items:start;
+}
+.showcase-step{
+  display:flex;gap:16px;
+  padding-bottom:30px;margin-bottom:30px;
+  border-bottom:1px solid var(--border);
+}
+.showcase-step:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.step-num{
+  font-family:var(--f-mono);font-size:.72rem;color:var(--green-hi);
+  background:rgba(34,139,34,.12);border:1px solid rgba(34,139,34,.22);
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.step-body h3{
+  font-family:var(--f-display);font-size:.95rem;font-weight:700;
+  margin-bottom:5px;
+}
+.step-body p{font-size:.845rem;color:var(--fg-muted);line-height:1.65}
+
+/* tabs */
+.tabs-row{
+  display:flex;gap:4px;margin-bottom:16px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:9px;padding:4px;
+}
+.tab-btn{
+  flex:1;font-family:var(--f-body);font-size:.77rem;font-weight:500;
+  color:var(--fg-muted);background:none;border:none;
+  padding:7px 10px;border-radius:6px;cursor:pointer;
+  transition:all .18s;white-space:nowrap;
+}
+.tab-btn.active{
+  background:var(--bg-elevated);color:var(--fg);
+  border:1px solid var(--border-mid);
+}
+.code-win{
+  background:var(--bg-code);border:1px solid var(--border-mid);
+  border-radius:12px;overflow:hidden;
+}
+.code-win-bar{
+  display:flex;align-items:center;gap:7px;
+  padding:11px 15px;border-bottom:1px solid var(--border);
+  background:var(--bg-elevated);
+}
+.code-win pre{
+  padding:22px;font-family:var(--f-mono);
+  font-size:.79rem;line-height:1.78;
+  overflow-x:auto;min-width:0;
+}
+.code-panel{display:none}.code-panel.active{display:block}
+
+/* ══ INSTALL ═════════════════════════════════════════ */
+.install{padding-block:100px}
+.install-box{
+  background:var(--bg-card);border:1px solid var(--border-mid);
+  border-radius:22px;padding:72px 80px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.install-box::before{
+  content:'';position:absolute;inset:0;
+  background:var(--grad-soft);pointer-events:none;
+}
+.install-box::after{
+  content:'';position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,139,34,.12) 0%,transparent 65%);
+  bottom:-200px;left:50%;transform:translateX(-50%);
+  pointer-events:none;
+}
+.install-title{
+  font-family:var(--f-display);
+  font-size:clamp(1.7rem,3vw,2.4rem);
+  font-weight:800;letter-spacing:-.022em;
+  margin-bottom:12px;position:relative;z-index:1;
+}
+.install-sub{
+  font-size:.975rem;color:var(--fg-muted);
+  margin-bottom:32px;position:relative;z-index:1;
+}
+.cmd-row{
+  display:inline-flex;align-items:center;gap:14px;
+  background:var(--bg-code);border:1px solid var(--border-mid);
+  border-radius:11px;padding:13px 20px;
+  margin-bottom:40px;position:relative;z-index:1;
+}
+.cmd-prompt{color:var(--green-hi);font-family:var(--f-mono);font-size:.95rem;user-select:none}
+.cmd-txt{font-family:var(--f-mono);font-size:.95rem;color:var(--fg);overflow-wrap:anywhere}
+.copy-btn{
+  background:var(--bg-elevated);border:1px solid var(--border-mid);
+  color:var(--fg-muted);border-radius:7px;padding:5px 11px;
+  font-family:var(--f-body);font-size:.73rem;cursor:pointer;
+  transition:all .18s;
+}
+.copy-btn:hover{color:var(--fg);border-color:var(--border-hi)}
+.install-steps{
+  display:flex;justify-content:center;gap:48px;flex-wrap:wrap;
+  position:relative;z-index:1;
+}
+.ins-step{display:flex;flex-direction:column;align-items:center;gap:8px}
+.ins-icon{
+  width:44px;height:44px;border-radius:11px;
+  background:var(--bg-elevated);border:1px solid var(--border-mid);
+  display:flex;align-items:center;justify-content:center;
+}
+.ins-label{font-size:.76rem;color:var(--fg-muted);letter-spacing:.03em}
+
+/* ══ FOOTER ══════════════════════════════════════════ */
+.footer{
+  border-top:1px solid var(--border);
+  background:var(--bg-card);
+  padding-block:60px 36px;
+}
+.footer-grid{
+  display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;
+  gap:48px;margin-bottom:48px;
+}
+.footer-brand p{
+  font-size:.845rem;color:var(--fg-muted);line-height:1.7;
+  max-width:230px;margin-top:12px;
+}
+.footer-col h4{
+  font-family:var(--f-display);font-size:.73rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;
+  color:var(--fg-subtle);margin-bottom:16px;
+}
+.footer-col a{
+  display:block;font-size:.845rem;
+  color:var(--fg-muted);margin-bottom:10px;
+  transition:color .18s;
+}
+.footer-col a:hover{color:var(--fg)}
+.footer-bottom{
+  padding-top:24px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-bottom p{font-size:.77rem;color:var(--fg-subtle)}
+.footer-bottom-links{display:flex;gap:20px}
+.footer-bottom-links a{font-size:.77rem;color:var(--fg-subtle);transition:color .18s}
+.footer-bottom-links a:hover{color:var(--fg-muted)}
+
+/* ══ RESPONSIVE ══════════════════════════════════════ */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr;gap:48px}
+  .hero{padding-top:calc(60px + env(safe-area-inset-top,0px) + 60px)}
+  .showcase-inner{grid-template-columns:1fr;gap:48px}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-links,.nav-badge{display:none}
+  .nav-burger{display:flex}
+  .install-box{padding:48px 32px}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero-ctas{flex-direction:column}
+  .hero-ctas a{text-align:center;justify-content:center}
+  .install-steps{gap:28px}
+  .cmd-row{flex-wrap:wrap;justify-content:center}
+  .install-box{padding:36px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="nav">
+  <div class="nav-pill">
+  <div class="nav-row">
+    <!-- Logo -->
+    <a href="#" class="nav-logo">
+      <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2BAD2B"/>
+            <stop offset="100%" stop-color="#3434e6"/>
+          </linearGradient>
+        </defs>
+        <path d="M15 2L4 15h9l-2 9 13-13h-9l2-9z" fill="url(#lg1)"/>
+      </svg>
+      Barq
+      <span class="nav-logo-urdu">برق</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <div class="nav-links" id="nav-links">
+
+      <!-- Framework dropdown -->
+      <div class="nav-item">
+        <button class="nav-item-btn">
+          Framework
+          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9" stroke-width="2"/></svg>
+        </button>
+        <div class="mega-menu mega-cols-2" style="min-width:480px">
+          <div class="mega-section">
+            <div class="mega-section-label">Explore Barq</div>
+            <a class="mega-link" href="docs/index.html">
+              <div class="mega-link-icon green"><svg width="14" height="14" viewBox="0 0 26 26" fill="none"><path d="M15 2L4 15h9l-2 9 13-13h-9l2-9z" fill="#38CC38"/></svg></div>
+              <div><div class="mega-link-title">Overview</div><div class="mega-link-desc">What makes Barq different</div></div>
+            </a>
+            <a class="mega-link" href="https://github.com/barq-lang/barq/blob/main/CHANGELOG.md">
+              <div class="mega-link-icon"><svg width="14" height="14" fill="none" stroke="var(--fg-muted)" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.8"/><polyline points="14,2 14,8 20,8" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">Changelog</div><div class="mega-link-desc">What's new in each release</div></div>
+            </a>
+            <a class="mega-link" href="docs/index.html">
+              <div class="mega-link-icon amber"><svg width="14" height="14" fill="none" stroke="#D97706" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke-width="1.6"/></svg></div>
+              <div><div class="mega-link-title">Barq Learn</div><div class="mega-link-desc">Interactive language tutorial</div></div>
+            </a>
+          </div>
+          <div class="mega-section">
+            <div class="mega-section-label">Runtime</div>
+            <a class="mega-link" href="https://github.com/barq-lang/barq#speed">
+              <div class="mega-link-icon blue"><svg width="14" height="14" fill="none" stroke="#6B6BF5" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">Performance</div><div class="mega-link-desc">Benchmarks &amp; bytecode VM</div></div>
+            </a>
+            <a class="mega-link" href="docs/index.html">
+              <div class="mega-link-icon"><svg width="14" height="14" fill="none" stroke="var(--fg-muted)" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">Type System</div><div class="mega-link-desc">Strict types, attributes, casts</div></div>
+            </a>
+            <a class="mega-link" href="https://github.com/barq-lang/barq-framework">
+              <div class="mega-link-icon"><svg width="14" height="14" fill="none" stroke="var(--fg-muted)" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" stroke-width="1.8"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">ORM &amp; Database</div><div class="mega-link-desc">MySQL, Postgres, SQLite, MongoDB</div></div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products dropdown -->
+      <div class="nav-item">
+        <button class="nav-item-btn">
+          Products
+          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9" stroke-width="2"/></svg>
+        </button>
+        <div class="mega-menu mega-cols-2" style="min-width:460px">
+          <div class="mega-section">
+            <div class="mega-section-label">Official Packages</div>
+            <a class="mega-link" href="https://github.com/barq-lang/barq-auth">
+              <div class="mega-link-icon green"><svg width="14" height="14" fill="none" stroke="#38CC38" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.8"/><circle cx="9" cy="7" r="4" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">barq-auth</div><div class="mega-link-desc">Auth, OAuth, 2FA, Teams</div></div>
+            </a>
+            <a class="mega-link" href="https://github.com/barq-lang/barq-permissions">
+              <div class="mega-link-icon blue"><svg width="14" height="14" fill="none" stroke="#6B6BF5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">barq-permissions</div><div class="mega-link-desc">Roles, permissions, wildcards</div></div>
+            </a>
+            <a class="mega-link" href="https://github.com/barq-lang/barq-framework">
+              <div class="mega-link-icon amber"><svg width="14" height="14" fill="none" stroke="#D97706" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">barq-framework</div><div class="mega-link-desc">ORM, migrations, container, events</div></div>
+            </a>
+          </div>
+          <div class="mega-section">
+            <div class="mega-section-label">Tools</div>
+            <a class="mega-link" href="https://github.com/barq-lang/vscode-barq">
+              <div class="mega-link-icon"><svg width="14" height="14" fill="none" stroke="var(--fg-muted)" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">VS Code Extension</div><div class="mega-link-desc">Highlighting, formatting, inline errors</div></div>
+            </a>
+            <a class="mega-link" href="https://github.com/barq-lang/barq">
+              <div class="mega-link-icon"><svg width="14" height="14" fill="none" stroke="var(--fg-muted)" viewBox="0 0 24 24"><polyline points="16,18 22,12 16,6" stroke-width="1.8"/><polyline points="8,6 2,12 8,18" stroke-width="1.8"/></svg></div>
+              <div><div class="mega-link-title">Playground</div><div class="mega-link-desc">Try Barq in the browser</div></div>
+            </a>
+            <a class="mega-link mega-view-all" href="https://github.com/barq-lang">
+              View all packages →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resources dropdown -->
+      <div class="nav-item">
+        <button class="nav-item-btn">
+          Resources
+          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9" stroke-width="2"/></svg>
+        </button>
+        <div class="mini-menu">
+          <a class="mini-link" href="#">Blog</a>
+          <a class="mini-link" href="#">Screencasts</a>
+          <a class="mini-link" href="https://github.com/barq-lang/barq/discussions">Community</a>
+          <a class="mini-link" href="https://github.com/barq-lang/barq/blob/main/docs/step-11-versioning-roadmap.md">Roadmap</a>
+          <a class="mini-link" href="https://github.com/barq-lang">GitHub</a>
+        </div>
+      </div>
+
+      <a href="docs/index.html" class="nav-plain">Docs</a>
+    </div>
+
+    <!-- Right -->
+    <div class="nav-right">
+      <!-- Search -->
+      <button class="nav-search" id="nav-search-btn">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/></svg>
+        Search docs
+        <span class="nav-search-kbd">⌘K</span>
+      </button>
+
+      <!-- GitHub -->
+      <a href="https://github.com/barq-lang" class="nav-gh" aria-label="Barq on GitHub">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span class="nav-gh-stars">GitHub</span>
+      </a>
+
+      <!-- Theme toggle -->
+      <button class="nav-theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke-width="2"/><line x1="12" y1="1" x2="12" y2="3" stroke-width="2"/><line x1="12" y1="21" x2="12" y2="23" stroke-width="2"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-width="2"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-width="2"/><line x1="1" y1="12" x2="3" y2="12" stroke-width="2"/><line x1="21" y1="12" x2="23" y2="12" stroke-width="2"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-width="2"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-width="2"/></svg>
+        <svg class="icon-moon" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"/></svg>
+      </button>
+
+      <a href="#install" class="btn-nav-cta">
+        Get Started
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+
+    <button class="nav-burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  </div><!-- /nav-pill -->
+</nav>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="#">Framework</a>
+  <a href="https://github.com/barq-lang">Products</a>
+  <a href="#">Resources</a>
+  <a href="docs/index.html">Docs</a>
+  <a href="#install" style="color:var(--green-hi);font-weight:600">Get Started →</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-glow-g"></div>
+  <div class="hero-glow-b"></div>
+  <div class="container hero-inner">
+    <!-- left -->
+    <div>
+      <div class="hero-eyebrow">New Language · Full Stack · Open Source</div>
+      <h1 class="hero-h1">
+        Build Full-Stack.<br>
+        <span class="grad-text">At Lightning Speed.</span>
+      </h1>
+      <p class="hero-sub">
+        Barq is a strictly-typed, full-stack programming language with Python-style syntax and PHP-level power. Write your backend, frontend, and database logic in a single, beautiful language.
+      </p>
+      <div class="hero-ctas">
+        <a href="#install" class="btn-primary">
+          Get Started
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7 2l4.5 4.5L7 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </a>
+        <a href="docs/index.html" class="btn-ghost">Read the Docs</a>
+      </div>
+      <p class="hero-urdu-note">برق — Urdu for Lightning</p>
+    </div>
+    <!-- right: code card -->
+    <div>
+      <div class="code-card">
+        <div class="code-card-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="code-card-name">HomeController.bq</span>
+        </div>
+        <pre><code
+><span class="kw">namespace</span> <span class="ns">App\Controllers</span>
+
+<span class="kw">use</span> <span class="ns">App\Models\User</span>
+<span class="kw">use</span> <span class="ns">Barq\Http\Request</span>
+
+<span class="kw">class</span> <span class="ty">HomeController</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[View]</span>
+    <span class="kw">karo</span> <span class="fn">index</span><span class="pu">(</span><span class="ty">Request</span> request<span class="pu">)</span>
+        users <span class="op">=</span> <span class="ty">User</span>
+            <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"active"</span><span class="pu">,</span> <span class="kw">true</span><span class="pu">)</span>
+            <span class="pu">.</span><span class="fn">orderBy</span><span class="pu">(</span><span class="st">"name"</span><span class="pu">)</span>
+            <span class="pu">.</span><span class="fn">paginate</span><span class="pu">(</span><span class="nm">20</span><span class="pu">)</span>
+        <span class="kw">return</span> <span class="fn">view</span><span class="pu">(</span><span class="st">"home"</span><span class="pu">,</span> <span class="pu">#{</span> users<span class="pu">:</span> users <span class="pu">})</span>
+
+    <span class="at">#[Public]</span>
+    <span class="at">#[Response]</span>
+    <span class="kw">karo</span> <span class="fn">store</span><span class="pu">(</span><span class="ty">Request</span> request<span class="pu">)</span>
+        <span class="ty">string</span> name  <span class="op">=</span> request<span class="pu">.</span><span class="fn">input</span><span class="pu">(</span><span class="st">"name"</span><span class="pu">)</span>
+        <span class="ty">string</span> email <span class="op">=</span> request<span class="pu">.</span><span class="fn">input</span><span class="pu">(</span><span class="st">"email"</span><span class="pu">)</span>
+        user <span class="op">=</span> <span class="kw">new</span> <span class="ty">User</span><span class="pu">(</span>name<span class="pu">,</span> email<span class="pu">)</span>
+        user<span class="pu">.</span><span class="fn">save</span><span class="pu">()</span>
+        <span class="kw">return</span> <span class="fn">response</span><span class="pu">().</span><span class="fn">redirect</span><span class="pu">(</span><span class="st">"/"</span><span class="pu">)</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS STRIP ═══ -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <span class="stat-num">&lt; 0.5ms</span>
+        <span class="stat-label">HTTP Response</span>
+      </div>
+      <div>
+        <span class="stat-num">5</span>
+        <span class="stat-label">Database Engines</span>
+      </div>
+      <div>
+        <span class="stat-num">100%</span>
+        <span class="stat-label">Type-Safe</span>
+      </div>
+      <div>
+        <span class="stat-num">0</span>
+        <span class="stat-label">External Dependencies</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features">
+  <div class="container">
+    <p class="section-eyebrow">Why Barq</p>
+    <h2 class="section-title">Everything you need.<br><span class="grad-text">Nothing you don't.</span></h2>
+    <p class="section-sub">Barq ships with a complete standard library — no npm, no pip, no composer. One language for the full stack.</p>
+    <div class="feat-grid">
+
+      <!-- Card 1: Speed / Bytecode -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot"></span>
+          <h3 class="feat-title">Sub-Millisecond Speed</h3>
+          <span class="feat-label">runtime.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="cm">// First run: compile → cache .bqc</span>
+<span class="ty">Runtime</span><span class="pu">.</span><span class="fn">compile</span><span class="pu">(</span><span class="st">"app.bq"</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">cache</span><span class="pu">(</span><span class="st">".bqc"</span><span class="pu">)</span>
+
+<span class="cm">// Subsequent runs: load bytecode</span>
+<span class="ty">Runtime</span><span class="pu">.</span><span class="fn">load</span><span class="pu">(</span><span class="st">"app.bqc"</span><span class="pu">)</span>  <span class="cm">// ~0.4ms</span>
+<span class="ty">Runtime</span><span class="pu">.</span><span class="fn">execute</span><span class="pu">()</span></code></div>
+        <p class="feat-footer">Compiles to bytecode on first run. Cached <code style="font-family:var(--f-mono);font-size:.8em;color:var(--green-hi)">.bqc</code> files load in &lt;0.5ms with no interpreter overhead.</p>
+      </div>
+
+      <!-- Card 2: Strict Types -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot" style="background:#3434e6"></span>
+          <h3 class="feat-title">Strictly Typed</h3>
+          <span class="feat-label">user.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="at">#[string]</span>
+<span class="kw">karo</span> <span class="fn">greet</span><span class="pu">(</span><span class="ty">string</span> name<span class="pu">)</span>
+    <span class="kw">return</span> <span class="st">"Hello, "</span> <span class="op">+</span> name
+
+<span class="cm">// ✗ caught at compile time:</span>
+<span class="fn">greet</span><span class="pu">(</span><span class="nm">42</span><span class="pu">)</span>
+<span class="cm">// TypeError: expected string, got int</span></code></div>
+        <p class="feat-footer">The compiler catches type mismatches, null errors, and wrong returns before you run a single line.</p>
+      </div>
+
+      <!-- Card 3: Full Stack -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot" style="background:#D97706"></span>
+          <h3 class="feat-title">True Full Stack</h3>
+          <span class="feat-label">routes.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="cm">// HTTP → DB → Template, one file</span>
+<span class="ty">Route</span><span class="pu">::</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/posts"</span><span class="pu">,</span>
+  <span class="st">"PostController@index"</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">middleware</span><span class="pu">(</span><span class="st">"auth"</span><span class="pu">)</span>
+
+<span class="cm">// Controller returns a view</span>
+<span class="kw">return</span> <span class="fn">view</span><span class="pu">(</span><span class="st">"posts.index"</span><span class="pu">,</span>
+  <span class="pu">#{</span><span class="st">"posts"</span><span class="pu">:</span> posts<span class="pu">})</span></code></div>
+        <p class="feat-footer">One language for routing, DB queries, templates, and reactive SPA components. No context switching.</p>
+      </div>
+
+      <!-- Card 4: Multi-Database -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot"></span>
+          <h3 class="feat-title">Multi-Database</h3>
+          <span class="feat-label">query.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="cm">// Same API — MySQL, PG, SQLite</span>
+posts <span class="op">=</span> <span class="ty">Post</span>
+  <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"published"</span><span class="pu">,</span> <span class="kw">true</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">with</span><span class="pu">(</span><span class="st">"author"</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">orderBy</span><span class="pu">(</span><span class="st">"created_at"</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">paginate</span><span class="pu">(</span><span class="nm">15</span><span class="pu">)</span></code></div>
+        <p class="feat-footer">MySQL, MariaDB, PostgreSQL, SQLite, MongoDB. Switch engines without rewriting a single query.</p>
+      </div>
+
+      <!-- Card 5: Reactive SPA -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot" style="background:#3434e6"></span>
+          <h3 class="feat-title">SPA &amp; Reactive UI</h3>
+          <span class="feat-label">counter.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="kw">component</span> <span class="ty">Counter</span>
+  <span class="ty">int</span> count <span class="op">=</span> <span class="nm">0</span>
+
+  <span class="kw">template</span>
+    <span class="pu">&lt;button</span> <span class="at">@click</span>=<span class="st">"count++"</span><span class="pu">&gt;</span>
+      Clicked <span class="op">{</span>count<span class="op">}</span> times
+    <span class="pu">&lt;/button&gt;</span></code></div>
+        <p class="feat-footer">Vue.js-style reactive components in pure Barq. No JavaScript framework — no npm, no webpack.</p>
+      </div>
+
+      <!-- Card 6: Zero Deps -->
+      <div class="feat-card">
+        <div class="feat-card-header">
+          <span class="feat-card-dot" style="background:#D97706"></span>
+          <h3 class="feat-title">Zero Dependencies</h3>
+          <span class="feat-label">stdlib.bq</span>
+        </div>
+        <div class="feat-code"><code
+><span class="kw">use</span> <span class="ns">Barq\Http\Client</span>
+<span class="kw">use</span> <span class="ns">Barq\Crypto\Hash</span>
+<span class="kw">use</span> <span class="ns">Barq\Mail\Mailer</span>
+<span class="kw">use</span> <span class="ns">Barq\Queue\Job</span>
+<span class="kw">use</span> <span class="ns">Barq\Test\Assert</span>
+<span class="cm">// all built-in — zero install</span></code></div>
+        <p class="feat-footer">HTTP, crypto, mail, queues, testing — all in the standard library. Start productive from line one.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CODE SHOWCASE ═══ -->
+<section class="showcase">
+  <div class="container showcase-inner">
+    <!-- left: steps -->
+    <div>
+      <p class="section-eyebrow">Code Examples</p>
+      <h2 class="section-title" style="margin-bottom:36px">Clean syntax.<br><span class="grad-text">Familiar patterns.</span></h2>
+
+      <div class="showcase-step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Expressive ORM</h3>
+          <p>Chain query methods just like Laravel's Eloquent. Barq's ORM works identically across MySQL, PostgreSQL, and SQLite — no raw SQL required.</p>
+        </div>
+      </div>
+
+      <div class="showcase-step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Declarative Routing</h3>
+          <p>Map URLs to controllers in a single routes file. Group routes by prefix, apply middleware, and define RESTful resources with minimal code.</p>
+        </div>
+      </div>
+
+      <div class="showcase-step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>HTML-Native Templates</h3>
+          <p>Barq templates use HTML-tag directives — <code style="font-family:var(--f-mono);font-size:.82em;color:var(--green-hi)">&lt;each&gt;</code>, <code style="font-family:var(--f-mono);font-size:.82em;color:var(--green-hi)">&lt;if&gt;</code>, <code style="font-family:var(--f-mono);font-size:.82em;color:var(--green-hi)">{variable}</code> — that feel natural to anyone who knows HTML.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- right: code window with tabs -->
+    <div>
+      <div class="tabs-row">
+        <button class="tab-btn active" data-panel="p1">ORM</button>
+        <button class="tab-btn" data-panel="p2">Routes</button>
+        <button class="tab-btn" data-panel="p3">Templates</button>
+      </div>
+      <div class="code-win">
+        <div class="code-win-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+        </div>
+
+        <div class="code-panel active" id="p1">
+          <pre><code
+><span class="cm">// Fluent query builder — same API for all SQL engines</span>
+users <span class="op">=</span> <span class="ty">User</span>
+    <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"active"</span><span class="pu">,</span> <span class="kw">true</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"age"</span><span class="pu">,</span> <span class="st">">"</span><span class="pu">,</span> <span class="nm">18</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">with</span><span class="pu">(</span><span class="st">"posts"</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">orderBy</span><span class="pu">(</span><span class="st">"name"</span><span class="pu">,</span> <span class="st">"asc"</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">paginate</span><span class="pu">(</span><span class="nm">20</span><span class="pu">)</span>
+
+<span class="cm">// Create &amp; save</span>
+user <span class="op">=</span> <span class="kw">new</span> <span class="ty">User</span><span class="pu">()</span>
+user<span class="pu">.</span>name  <span class="op">=</span> <span class="st">"Alice"</span>
+user<span class="pu">.</span>email <span class="op">=</span> <span class="st">"alice@example.com"</span>
+user<span class="pu">.</span><span class="fn">save</span><span class="pu">()</span>
+
+<span class="cm">// Transactions</span>
+db<span class="pu">.</span><span class="fn">transaction</span><span class="pu">(</span><span class="kw">karo</span><span class="pu">():</span> <span class="ty">void</span>
+    db<span class="pu">.</span><span class="fn">table</span><span class="pu">(</span><span class="st">"accounts"</span><span class="pu">)</span>
+      <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"id"</span><span class="pu">,</span> fromId<span class="pu">)</span>
+      <span class="pu">.</span><span class="fn">decrement</span><span class="pu">(</span><span class="st">"balance"</span><span class="pu">,</span> amount<span class="pu">)</span>
+    db<span class="pu">.</span><span class="fn">table</span><span class="pu">(</span><span class="st">"accounts"</span><span class="pu">)</span>
+      <span class="pu">.</span><span class="fn">where</span><span class="pu">(</span><span class="st">"id"</span><span class="pu">,</span> toId<span class="pu">)</span>
+      <span class="pu">.</span><span class="fn">increment</span><span class="pu">(</span><span class="st">"balance"</span><span class="pu">,</span> amount<span class="pu">)</span>
+<span class="pu">)</span></code></pre>
+        </div>
+
+        <div class="code-panel" id="p2">
+          <pre><code
+><span class="kw">use</span> <span class="ns">App\Controllers\UserController</span>
+<span class="kw">use</span> <span class="ns">App\Middleware\Auth</span>
+
+<span class="cm">// Web routes — :id is a route parameter</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/"</span><span class="pu">,</span> <span class="kw">kr</span><span class="pu">():</span> <span class="ty">string</span> <span class="pu">=&gt;</span> <span class="st">"&lt;h1&gt;Home&lt;/h1&gt;"</span><span class="pu">)</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/users/:id"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">UserController</span><span class="pu">,</span> <span class="st">"show"</span><span class="pu">]</span><span class="pu">)</span><span class="pu">.</span><span class="fn">whereNumber</span><span class="pu">(</span><span class="st">"id"</span><span class="pu">)</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">resource</span><span class="pu">(</span><span class="st">"posts"</span><span class="pu">,</span> <span class="ty">PostController</span><span class="pu">)</span>
+
+<span class="cm">// API group with middleware</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">alias</span><span class="pu">(</span><span class="st">"auth"</span><span class="pu">,</span> <span class="ty">Auth</span><span class="pu">)</span>
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">group</span><span class="pu">(#{</span><span class="st">"prefix"</span><span class="pu">:</span> <span class="st">"api/v1"</span><span class="pu">,</span> <span class="st">"middleware"</span><span class="pu">:</span> <span class="st">"auth"</span><span class="pu">},</span> <span class="kw">karo</span><span class="pu">():</span> <span class="ty">void</span>
+    <span class="ty">Route</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">"/profile"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">ProfileController</span><span class="pu">,</span> <span class="st">"show"</span><span class="pu">]</span><span class="pu">)</span><span class="pu">.</span><span class="fn">name</span><span class="pu">(</span><span class="st">"api.profile"</span><span class="pu">)</span>
+    <span class="ty">Route</span><span class="pu">.</span><span class="fn">put</span><span class="pu">(</span><span class="st">"/profile"</span><span class="pu">,</span> <span class="pu">#[</span><span class="ty">ProfileController</span><span class="pu">,</span> <span class="st">"update"</span><span class="pu">]</span><span class="pu">)</span>
+<span class="pu">)</span>
+
+<span class="ty">Route</span><span class="pu">.</span><span class="fn">serve</span><span class="pu">(#{</span><span class="st">"port"</span><span class="pu">:</span> 8000<span class="pu">})</span></code></pre>
+        </div>
+
+        <div class="code-panel" id="p3">
+          <pre><code
+><span class="cm">&lt;!-- views/users/index.bq --&gt;</span>
+<span class="kw">&lt;if</span> <span class="at">condition</span>=<span class="st">"users.length &gt; 0"</span><span class="kw">&gt;</span>
+    <span class="pu">&lt;ul</span> <span class="at">class</span>=<span class="st">"user-list"</span><span class="pu">&gt;</span>
+    <span class="kw">&lt;each</span> <span class="at">item</span>=<span class="st">"user"</span> <span class="at">in</span>=<span class="st">"users"</span><span class="kw">&gt;</span>
+        <span class="pu">&lt;li</span> <span class="at">class</span>=<span class="st">"card"</span><span class="pu">&gt;</span>
+            <span class="pu">&lt;strong&gt;</span><span class="op">{</span>user.name<span class="op">}</span><span class="pu">&lt;/strong&gt;</span>
+            <span class="pu">&lt;span&gt;</span><span class="op">{</span>user.email<span class="op">}</span><span class="pu">&lt;/span&gt;</span>
+            <span class="kw">&lt;if</span> <span class="at">condition</span>=<span class="st">"user.active"</span><span class="kw">&gt;</span>
+                <span class="pu">&lt;span</span> <span class="at">class</span>=<span class="st">"badge-green"</span><span class="pu">&gt;</span>Active<span class="pu">&lt;/span&gt;</span>
+            <span class="kw">&lt;/if&gt;</span>
+        <span class="pu">&lt;/li&gt;</span>
+    <span class="kw">&lt;/each&gt;</span>
+    <span class="pu">&lt;/ul&gt;</span>
+<span class="kw">&lt;else&gt;</span>
+    <span class="pu">&lt;p</span> <span class="at">class</span>=<span class="st">"empty"</span><span class="pu">&gt;</span>No users found.<span class="pu">&lt;/p&gt;</span>
+<span class="kw">&lt;/if&gt;</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INSTALL ═══ -->
+<section class="install" id="install">
+  <div class="container">
+    <div class="install-box">
+      <h2 class="install-title">Start building in<br><span class="grad-text">30 seconds.</span></h2>
+      <p class="install-sub">Pure Python 3, no dependencies. Clone and run.</p>
+
+      <div class="cmd-row">
+        <span class="cmd-prompt">$</span>
+        <span class="cmd-txt" id="cmd-txt">git clone https://github.com/barq-lang/barq &amp;&amp; barq/bin/barq run barq/examples/hello.bq</span>
+        <button class="copy-btn" id="copy-btn">Copy</button>
+      </div>
+
+      <div class="install-steps">
+        <div class="ins-step">
+          <div class="ins-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3v14M3 10l7 7 7-7" stroke="url(#lg1)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="ins-label">Clone barq</span>
+        </div>
+        <div class="ins-step">
+          <div class="ins-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4" width="14" height="12" rx="2" stroke="url(#lg1)" stroke-width="1.6" fill="none"/>
+              <path d="M7 8h6M7 12h4" stroke="url(#lg1)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="ins-label">Add packages (optional)</span>
+        </div>
+        <div class="ins-step">
+          <div class="ins-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7" stroke="url(#lg1)" stroke-width="1.6" fill="none"/>
+              <path d="M8 7l5 3-5 3V7z" fill="url(#lg1)" stroke="none"/>
+            </svg>
+          </div>
+          <span class="ins-label">barq run</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0">
+          <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+            <path d="M15 2L4 15h9l-2 9 13-13h-9l2-9z" fill="url(#lg1)"/>
+          </svg>
+          Barq
+          <span class="nav-logo-urdu">برق</span>
+        </div>
+        <p>A fast, full-stack programming language built for the modern web. Lightning-fast. Strictly typed. Beautifully clean.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Language</h4>
+        <a href="docs/index.html">Documentation</a>
+        <a href="https://github.com/barq-lang/barq/tree/main/docs">Syntax Guide</a>
+        <a href="https://github.com/barq-lang/barq/blob/main/docs/step-07-standard-library.md">Standard Library</a>
+        <a href="https://github.com/barq-lang/barq/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/barq-lang/barq">GitHub</a>
+      </div>
+      <div class="footer-col">
+        <h4>Framework</h4>
+        <a href="https://github.com/barq-lang/barq-framework">MVC Guide</a>
+        <a href="https://github.com/barq-lang/barq-framework#models">ORM</a>
+        <a href="https://github.com/barq-lang/barq#route--router-and-middleware">Routing</a>
+        <a href="https://github.com/barq-lang/barq#templates-v080">Templates</a>
+        <a href="https://github.com/barq-lang/barq">CLI Commands</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="#">Discord</a>
+        <a href="#">Forum</a>
+        <a href="#">Blog</a>
+        <a href="https://github.com/barq-lang/barq/blob/main/CONTRIBUTING.md">Contribute</a>
+        <a href="https://github.com/barq-lang">Packages</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Barq Language · برق · Open Source</p>
+      <div class="footer-bottom-links">
+        <a href="https://github.com/barq-lang/barq/blob/main/LICENSE">License</a>
+        <a href="#">Privacy</a>
+        <a href="https://github.com/barq-lang/barq/security">Security</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2BAD2B"/>
+      <stop offset="100%" stop-color="#3434e6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>
+// hamburger
+const burger = document.getElementById('burger');
+const mobNav = document.getElementById('mob-nav');
+burger.addEventListener('click', () => {
+  mobNav.classList.toggle('open');
+});
+
+// tab switcher
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+
+// copy button
+const copyBtn = document.getElementById('copy-btn');
+const cmdTxt  = document.getElementById('cmd-txt');
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(cmdTxt.textContent).then(() => {
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800);
+  }).catch(() => {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(cmdTxt);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    copyBtn.textContent = 'Selected';
+    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800);
+  });
+});
+
+// theme toggle
+const themeToggle = document.getElementById('theme-toggle');
+const iconSun  = themeToggle.querySelector('.icon-sun');
+const iconMoon = themeToggle.querySelector('.icon-moon');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  iconSun.style.display  = theme === 'dark' ? 'none' : '';
+  iconMoon.style.display = theme === 'dark' ? '' : 'none';
+  try { localStorage.setItem('barq-theme', theme); } catch(e) {}
+}
+
+(function() {
+  let saved;
+  try { saved = localStorage.getItem('barq-theme'); } catch(e) {}
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved === 'dark' || saved === 'light' ? saved : (sysDark ? 'dark' : 'light'));
+})();
+
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+});
+</script>
