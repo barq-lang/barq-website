@@ -646,6 +646,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.23.0-alpha: the <code>karo</code> type</strong>
+      <p>Function values now have the type <code>karo</code> instead of <code>function</code>, so one word covers declaring and passing functions: <code>karo applyTwice(karo kr, int value)</code> then <code>return kr(kr(value))</code>. <code>karo</code> and <code>kr</code> are keywords only where they start a function; elsewhere <code>kr</code> is an ordinary name.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.22.0-alpha: <code>barq build</code></strong>
       <p><code>barq build</code> makes a <code>dist/</code> folder to deploy: your app with every file already compiled, a copy of Barq and the packages it uses, and a <code>start</code> script (<code>start.cmd</code> on Windows). The server only needs Python 3. Run <code>dist/barq migrate</code>, then <code>dist/start</code>. Tests, <code>.env</code>, databases and uploaded files are left out; <code>--zip</code> packs the folder into one file.</p>
     </div>
@@ -957,7 +965,7 @@ dict&lt;string, list&lt;int&gt;&gt; grouped = #{<span class="st">"evens"</span>:
       <tbody>
         <tr><td>Named function</td><td><code>karo name(params)</code></td><td><code>karo sum(int a, int b)</code></td></tr>
         <tr><td>Anonymous function</td><td><code>karo(params): type</code> + indented body</td><td><code>any greet = karo(string name): string</code></td></tr>
-        <tr><td>Lambda</td><td><code>kr(params): type =&gt; expr</code></td><td><code>function double = kr(int n): int =&gt; n * 2</code></td></tr>
+        <tr><td>Lambda</td><td><code>kr(params): type =&gt; expr</code></td><td><code>karo double = kr(int n): int =&gt; n * 2</code></td></tr>
       </tbody>
     </table>
   </div>
@@ -1035,12 +1043,12 @@ dict&lt;string, list&lt;int&gt;&gt; grouped = #{<span class="st">"evens"</span>:
     <span class="kw">return</span> doubled
 )
 
-<span class="cm">// Lambda — kr(...) for a single expression; function values have the type function</span>
-<span class="ty">function</span> double = <span class="kw">kr</span>(<span class="ty">int</span> n): <span class="ty">int</span> =&gt; n * <span class="nm">2</span>
+<span class="cm">// Lambda — kr(...) for a single expression; function values have the type karo</span>
+<span class="ty">karo</span> double = <span class="kw">kr</span>(<span class="ty">int</span> n): <span class="ty">int</span> =&gt; n * <span class="nm">2</span>
 <span class="ty">list&lt;int&gt;</span> doubled = items.map(<span class="kw">kr</span>(<span class="ty">int</span> x): <span class="ty">int</span> =&gt; x * <span class="nm">2</span>)</code></pre>
   </div>
 
-  <p>The <code>function</code> type (v0.13) holds any callable value — a named function, a lambda, a bound method like <code>counter.bump</code>, or a built-in — so parameters can say they expect one: <code>karo applyTwice(function fn, int value)</code>.</p>
+  <p>Function values have the type <code>karo</code> (v0.22; it was <code>function</code> before): any callable value — a named function, a lambda, a bound method like <code>counter.bump</code>, or a built-in — so parameters can say they expect one: <code>karo applyTwice(karo kr, int value)</code> then <code>return kr(kr(value))</code>. <code>karo</code> and <code>kr</code> are keywords only where they start a function; elsewhere <code>karo</code> is the type and <code>kr</code> an ordinary name.</p>
 
   <h3 class="doc-h3" id="arguments">Defaults, Named Arguments &amp; Variadics</h3>
   <div class="callout info">
