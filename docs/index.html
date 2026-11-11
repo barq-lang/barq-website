@@ -646,6 +646,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.19.0-alpha: the language server</strong>
+      <p><code>barq lsp</code> gives editors completion, hover, go to definition, references, rename, signature help and inline errors, using the same parser and checker that run your code. The <a href="https://github.com/barq-lang/vscode-barq">VS Code extension</a> 0.2.0 starts it for you; any editor with an LSP client (Neovim, Helix, Zed, JetBrains) can run <code>barq lsp</code> for <code>.bq</code> files.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.18.0-alpha: tooling</strong>
       <p><code>barq fmt</code> formats <code>.bq</code> files (<code>--check</code> for CI, <code>--diff</code>, <code>-</code> for stdin). <code>barq check</code> reports syntax and type errors without running anything (<code>--json</code> for editors). The <a href="https://github.com/barq-lang/vscode-barq">VS Code extension</a> uses both.</p>
     </div>
