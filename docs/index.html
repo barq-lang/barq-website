@@ -646,6 +646,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.22.0-alpha: <code>barq build</code></strong>
+      <p><code>barq build</code> makes a <code>dist/</code> folder to deploy: your app with every file already compiled, a copy of Barq and the packages it uses, and a <code>start</code> script (<code>start.cmd</code> on Windows). The server only needs Python 3. Run <code>dist/barq migrate</code>, then <code>dist/start</code>. Tests, <code>.env</code>, databases and uploaded files are left out; <code>--zip</code> packs the folder into one file.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.21.0-alpha: <code>barq install</code></strong>
       <p>Packages are git repositories on GitHub. <code>barq install acme/strings</code> picks the newest tagged version that fits, puts it in <code>vendor/</code> and pins the exact commit in <code>barq.lock</code>; after that <code>use Acme\Strings\Shout</code> just works. Constraints like <code>@^1.2</code>, <code>@~1.2.3</code> or <code>@main</code>, plus <code>barq update</code>, <code>barq remove</code> and <code>barq publish</code> (checks your package and tags its version). barq-framework, barq-auth and barq-permissions install the same way.</p>
     </div>
