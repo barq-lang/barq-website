@@ -654,6 +654,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.24.0-alpha: the debugger</strong>
+      <p><code>barq debug app.bq</code> stops on the first line of a program. Set breakpoints (<code>b 12</code>, <code>b app/Cart.bq:13 if price &gt; 100</code>, <code>b add</code>), step with <code>n</code> / <code>s</code> / <code>o</code>, look at the call stack (<code>bt</code>) and variables (<code>v</code>), and run any Barq expression in the stopped frame. An uncaught exception stops where it was raised. In VS Code (extension 0.3.0) press F5: it runs <code>barq dap</code>, with conditional breakpoints, log points, watch, hover and the debug console. <code>breakpoint()</code> in your code stops there when a debugger is attached.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.22.0-alpha: <code>barq build</code></strong>
       <p><code>barq build</code> makes a <code>dist/</code> folder to deploy: your app with every file already compiled, a copy of Barq and the packages it uses, and a <code>start</code> script (<code>start.cmd</code> on Windows). The server only needs Python 3. Run <code>dist/barq migrate</code>, then <code>dist/start</code>. Tests, <code>.env</code>, databases and uploaded files are left out; <code>--zip</code> packs the folder into one file.</p>
     </div>
