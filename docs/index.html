@@ -646,6 +646,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.21.0-alpha: <code>barq install</code></strong>
+      <p>Packages are git repositories on GitHub. <code>barq install acme/strings</code> picks the newest tagged version that fits, puts it in <code>vendor/</code> and pins the exact commit in <code>barq.lock</code>; after that <code>use Acme\Strings\Shout</code> just works. Constraints like <code>@^1.2</code>, <code>@~1.2.3</code> or <code>@main</code>, plus <code>barq update</code>, <code>barq remove</code> and <code>barq publish</code> (checks your package and tags its version). barq-framework, barq-auth and barq-permissions install the same way.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.20.0-alpha: <code>barq new</code></strong>
       <p><code>barq new my-app</code> starts a web app with routes, a controller, views, config, an <code>.env</code> with its own <code>APP_KEY</code> and passing tests. <code>--api</code> makes a JSON-only app, <code>--console</code> a program, and <code>--auth</code> adds login, registration and the rest of barq-auth. With barq-framework installed it also gets the <code>User</code> model, its migration, a factory and a seeder, so <code>barq migrate</code> and <code>barq serve</code> work straight away.</p>
     </div>
