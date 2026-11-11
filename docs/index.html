@@ -646,6 +646,14 @@ barq/bin/barq packages        <span class="cm"># barq-framework, barq-auth, barq
   <div class="callout ok">
     <span class="c-icon">✅</span>
     <div class="c-body">
+      <strong>New in v0.20.0-alpha: <code>barq new</code></strong>
+      <p><code>barq new my-app</code> starts a web app with routes, a controller, views, config, an <code>.env</code> with its own <code>APP_KEY</code> and passing tests. <code>--api</code> makes a JSON-only app, <code>--console</code> a program, and <code>--auth</code> adds login, registration and the rest of barq-auth. With barq-framework installed it also gets the <code>User</code> model, its migration, a factory and a seeder, so <code>barq migrate</code> and <code>barq serve</code> work straight away.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="c-icon">✅</span>
+    <div class="c-body">
       <strong>New in v0.19.0-alpha: the language server</strong>
       <p><code>barq lsp</code> gives editors completion, hover, go to definition, references, rename, signature help and inline errors, using the same parser and checker that run your code. The <a href="https://github.com/barq-lang/vscode-barq">VS Code extension</a> 0.2.0 starts it for you; any editor with an LSP client (Neovim, Helix, Zed, JetBrains) can run <code>barq lsp</code> for <code>.bq</code> files.</p>
     </div>
